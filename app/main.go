@@ -15,7 +15,6 @@ func report(line int, where string, message string) {
 
 func error(line int, message string) {
 	report(line, "", message)
-
 }
 
 func run(source string) {
