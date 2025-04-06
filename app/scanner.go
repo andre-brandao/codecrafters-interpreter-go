@@ -1,8 +1,9 @@
 package main
 
 import (
-    "fmt"
+	"fmt"
 )
+
 type Scanner struct {
 	source  []rune
 	tokens  []Token
@@ -103,16 +104,14 @@ func (s *Scanner) scanToken() {
 		} else {
 			s.addToken(GREATER, nil)
 		}
-	case '/':
-		if s.match('/') {
-			// A comment goes until the end of the line.
-			// while (peek() != '\n' && !isAtEnd()) advance();
-			//
-
-		} else {
-			s.addToken(SLASH, nil)
-		}
-		break
+	// case '/':
+	// 	if s.match('/') {
+	// 		// A comment goes until the end of the line.
+	// 		// while (peek() != '\n' && !isAtEnd()) advance();
+	// 		//
+	// 	} else {
+	// 		s.addToken(SLASH, nil)
+	// 	}
 
 	default:
 		error(s.line, fmt.Sprintf("Unexpected character: %c", c))
