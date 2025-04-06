@@ -162,5 +162,5 @@ func (t Token) String() string {
 		literalStr = fmt.Sprintf("%v", t.Literal)
 	}
 
-	return fmt.Sprintf("%s %s %s \n", t.Type, string(t.Lexeme), literalStr)
+	return fmt.Sprintf("%s %s %s\n", t.Type, string(t.Lexeme), literalStr)
 }
