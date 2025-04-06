@@ -61,6 +61,10 @@ func runFile(filename string) {
 		for _, token := range tokens {
 			fmt.Printf(token.String())
 		}
+		
+		if hadError {
+		    os.Exit(65)
+		}
 	} else {
 		fmt.Println("EOF  null")
 	}
