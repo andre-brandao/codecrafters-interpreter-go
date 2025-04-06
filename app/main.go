@@ -5,8 +5,25 @@ import (
 	"os"
 )
 
-func run(line string) {
-    fmt.Println(line)
+var hadError = false
+
+func report(line int, where string, message string) {
+	fmt.Println("[line : ", line, " ] Error : ", where, " -> ", message)
+	hadError = true
+}
+
+func error(line int, message string) {
+	report(line, "", message)
+
+}
+
+func run(source string) {
+	fmt.Println(source)
+
+	for _, char := range source {
+		token := string(char)
+		fmt.Println("Symbol: ", token)
+	}
 }
 
 func runPrompt() {
@@ -22,20 +39,26 @@ func runPrompt() {
 			break
 		}
 		run(input)
+		hadError = false
 	}
 }
 
 func runFile(filename string) {
 	fileContents, err := os.ReadFile(filename)
+
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading file: %v\n", err)
 		os.Exit(1)
 	}
 	if len(fileContents) > 0 {
-		lines := string(fileContents)
-		for _, line := range lines {
-		    
-			run(string(line))
+
+		runes := []rune(string(fileContents))
+		s := NewScanner(runes)
+
+		tokens := s.ScanTokens()
+
+		for _, token := range tokens {
+			fmt.Printf(token.String())
 		}
 	} else {
 		fmt.Println("EOF  null -- file is empty")
@@ -63,15 +86,5 @@ func main() {
 	filename := os.Args[2]
 
 	runFile(filename)
-	// fileContents, err := os.ReadFile(filename)
-	// if err != nil {
-	// 	fmt.Fprintf(os.Stderr, "Error reading file: %v\n", err)
-	// 	os.Exit(1)
-	// }
 
-	// if len(fileContents) > 0 {
-	// 	panic("Scanner not implemented")
-	// } else {
-	// 	fmt.Println("EOF  null") // Placeholder, remove this line when implementing the scanner
-	// }
 }
