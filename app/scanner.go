@@ -50,11 +50,18 @@ func (s *Scanner) advance() rune {
 }
 
 func (s *Scanner) match(expected rune) bool {
-	if s.isAtEnd() || s.source[s.current] != expected {
+	if s.isAtEnd() || (s.source[s.current] != expected) {
 		return false
 	}
 	s.current++
 	return true
+}
+
+func (s *Scanner) peek() rune {
+    if s.isAtEnd() {
+        return '\000'
+    }
+    return s.source[s.current]
 }
 
 func (s *Scanner) scanToken() {
@@ -104,14 +111,17 @@ func (s *Scanner) scanToken() {
 		} else {
 			s.addToken(GREATER, nil)
 		}
-	// case '/':
-	// 	if s.match('/') {
-	// 		// A comment goes until the end of the line.
-	// 		// while (peek() != '\n' && !isAtEnd()) advance();
-	// 		//
-	// 	} else {
-	// 		s.addToken(SLASH, nil)
-	// 	}
+	case '/':
+		if s.match('/') {
+			// A comment goes until the end of the line.
+			// while (peek() != '\n' && !isAtEnd()) advance();
+			//
+			for s.peek() != '\n' && !s.isAtEnd() {
+				s.advance()
+			}
+		} else {
+			s.addToken(SLASH, nil)
+		}
 
 	default:
 		error(s.line, fmt.Sprintf("Unexpected character: %c", c))
