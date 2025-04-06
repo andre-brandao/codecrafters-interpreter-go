@@ -61,7 +61,7 @@ func runFile(filename string) {
 			fmt.Printf(token.String())
 		}
 	} else {
-		fmt.Println("EOF  null -- file is empty")
+		fmt.Println("EOF  null")
 	}
 }
 
