@@ -8,8 +8,9 @@ import (
 var hadError = false
 
 func report(line int, where string, message string) {
-	// fmt.Println("[line", line, "] Error: ", where, message)
-	fmt.Printf("[line %d] Error: %s\n", line, message)
+	// fmt.Printf("[line %d] Error: %s\n", line, message)
+	fmt.Fprintf(os.Stderr, "[line %d] Error: %s\n", line, message)
+
 	hadError = true
 }
 
@@ -60,9 +61,9 @@ func runFile(filename string) {
 		for _, token := range tokens {
 			fmt.Printf(token.String())
 		}
-		
+
 		if hadError {
-		    os.Exit(65)
+			os.Exit(65)
 		}
 	} else {
 		fmt.Println("EOF  null")
