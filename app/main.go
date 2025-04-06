@@ -8,7 +8,8 @@ import (
 var hadError = false
 
 func report(line int, where string, message string) {
-	fmt.Println("[line : ", line, " ] Error : ", where, " -> ", message)
+	// fmt.Println("[line", line, "] Error: ", where, message)
+	fmt.Printf("[line %d] Error: %s\n", line, message)
 	hadError = true
 }
 

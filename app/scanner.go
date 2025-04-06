@@ -1,5 +1,8 @@
 package main
 
+import (
+    "fmt"
+)
 type Scanner struct {
 	source  []rune
 	tokens  []Token
@@ -112,7 +115,7 @@ func (s *Scanner) scanToken() {
 		break
 
 	default:
-		error(s.line, "Unexpected character.")
+		error(s.line, fmt.Sprintf("Unexpected character: %c", c))
 	}
 }
 
