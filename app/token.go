@@ -176,10 +176,18 @@ func NewToken(t TokenType, lexeme []rune, literal any, line int) Token {
 	}
 }
 func (t Token) String() string {
-	// literalStr := "null"
-	// if t.Literal != nil {
-	// 	literalStr = fmt.Sprintf("%v", t.Literal)
-	// }
-
-	return fmt.Sprintf("%s %s\n", t.Type, string(t.Lexeme))
+	literalStr := "null"
+	if t.Literal == nil {
+		literalStr = "null"
+	} else {
+		switch v := t.Literal.(type) {
+		case []rune:
+			literalStr = string(v)
+		case string:
+			literalStr = v
+		default:
+			literalStr = fmt.Sprintf("%v", v)
+		}
+	}
+	return fmt.Sprintf("%s %s %s\n", t.Type, string(t.Lexeme), literalStr)
 }
