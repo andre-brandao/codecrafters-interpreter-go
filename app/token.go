@@ -177,28 +177,35 @@ func NewToken(t TokenType, lexeme []rune, literal any, line int) Token {
 	}
 }
 func (t Token) String() string {
-    var literalStr string
-    
-    if t.Literal == nil {
-        literalStr = "null"
-    } else {
-        switch v := t.Literal.(type) {
-        case []rune:
-            literalStr = string(v)
-        case string:
-            literalStr = v
-        case int:
-            literalStr = strconv.Itoa(v)
-        case float64:
-            literalStr = strconv.FormatFloat(v, 'f', 1, 64)
-        case bool:
-            literalStr = strconv.FormatBool(v)
-        // case []string:
-        //     literalStr = strings.Join(v, "")
-        default:
-            literalStr = fmt.Sprintf("%v", v)
-        }
-    }
+	var literalStr string
 
-    return fmt.Sprintf("%s %s %s\n", t.Type, string(t.Lexeme), literalStr)
+	if t.Literal == nil {
+		literalStr = "null"
+	} else {
+		switch v := t.Literal.(type) {
+		case []rune:
+			literalStr = string(v)
+		case string:
+			literalStr = v
+		case int:
+			literalStr = strconv.Itoa(v)
+		// case float64:
+		// 	literalStr = strconv.FormatFloat(v, 'f', -1, 64)
+		case float64:
+			if v == float64(int(v)) {
+				literalStr = fmt.Sprintf("%.1f", v) // Ensures 1234.0 for whole numbers
+			} else {
+				literalStr = fmt.Sprintf("%g", v) // Keeps the precision for non-whole numbers
+
+			}
+		case bool:
+			literalStr = strconv.FormatBool(v)
+		// case []string:
+		//     literalStr = strings.Join(v, "")
+		default:
+			literalStr = fmt.Sprintf("%v", v)
+		}
+	}
+
+	return fmt.Sprintf("%s %s %s\n", t.Type, string(t.Lexeme), literalStr)
 }
