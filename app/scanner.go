@@ -200,6 +200,8 @@ func (s *Scanner) scanToken() {
 	default:
 		if isDigit(c) {
 			s.number()
+		} else if isAlpha(c) {
+			s.identifier()
 		} else {
 			error(s.line, fmt.Sprintf("Unexpected character: %c", c))
 		}
@@ -215,4 +217,3 @@ func (s *Scanner) addToken(t TokenType, literal any) {
 		Line:    s.line,
 	})
 }
-
