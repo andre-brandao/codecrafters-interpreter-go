@@ -8,7 +8,6 @@ import (
 type TokenType int
 
 const (
-	// Single-character tokens.
 	LEFT_PAREN TokenType = iota
 	RIGHT_PAREN
 	LEFT_BRACE

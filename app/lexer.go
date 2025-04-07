@@ -192,11 +192,6 @@ func (s *Scanner) scanToken() {
 	case '"':
 		s.string()
 
-	case 'o':
-		if s.match('r') {
-			s.addToken(OR, nil)
-		}
-
 	default:
 		if isDigit(c) {
 			s.number()

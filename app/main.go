@@ -44,7 +44,9 @@ func runPrompt() {
 	}
 }
 
-func runFile(filename string) {
+type LoxHandler func([]rune)
+
+func runFile(filename string, handler LoxHandler) {
 	fileContents, err := os.ReadFile(filename)
 
 	if err != nil {
@@ -53,14 +55,9 @@ func runFile(filename string) {
 	}
 	if len(fileContents) > 0 {
 
-		runes := []rune(string(fileContents))
-		s := NewScanner(runes)
+		sourceCode := []rune(string(fileContents))
 
-		tokens := s.ScanTokens()
-
-		for _, token := range tokens {
-			fmt.Printf(token.String())
-		}
+		handler(sourceCode)
 
 		if hadError {
 			os.Exit(65)
@@ -77,19 +74,48 @@ func main() {
 	}
 
 	command := os.Args[1]
+	filename := os.Args[2]
 
 	if command == "repl" {
 		runPrompt()
 		return
 	}
 
-	if command != "tokenize" {
-		fmt.Fprintf(os.Stderr, "Unknown command: %s\n", command)
-		os.Exit(1)
+	if command == "tokenize" {
+		runFile(filename, func(source []rune) {
+			s := NewScanner(source)
+
+			tokens := s.ScanTokens()
+
+			for _, token := range tokens {
+				fmt.Printf(token.String())
+			}
+		})
 	}
 
-	filename := os.Args[2]
+	if command == "parse" {
+		runFile(filename, func(source []rune) {
+			s := NewScanner(source)
 
-	runFile(filename)
+			tokens := s.ScanTokens()
+
+			for _, token := range tokens {
+				fmt.Printf(token.String())
+			}
+		})
+	}
+
+	if command == "ast" {
+		astPrinter := NewAstPrinter()
+		exp1 := NewUnary(NewToken(MINUS, []rune{'-'}, nil, 1), NewLiteral(123))
+		exp2 := NewGrouping(NewLiteral(45.67))
+
+		exp3 := NewBinary(exp1, NewToken(STAR, []rune{'*'}, nil, 1), exp2)
+		fmt.Println(astPrinter.Print(exp3))
+
+	}
+
+	fmt.Fprintf(os.Stderr, "Unknown command: %s\n", command)
+	os.Exit(1)
 
 }
