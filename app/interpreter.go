@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 type Interpreter struct {
 }
@@ -14,9 +17,15 @@ func (i *Interpreter) Interpret(expr Expr) {
 	defer func() {
 		if r := recover(); r != nil {
 			// fmt.Println("recovered")
-			// fmt.Fprint(os.Stderr, r)
-			fmt.Print("interpret error")
-			hadError = true
+			runTimeError, ok := r.(*RuntimeError)
+			if ok {
+				fmt.Fprint(os.Stderr, runTimeError.Error())
+			} else {
+				fmt.Fprint(os.Stderr, "Unknown error")
+			}
+			hadRuntimeError = true
+			// fmt.Print("interpret error")
+			// hadError = true
 		}
 	}()
 
