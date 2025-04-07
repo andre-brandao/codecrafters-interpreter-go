@@ -83,6 +83,9 @@ func (i *Interpreter) VisitBinaryExpr(expr *Binary) interface{} {
 		if isString(left) && isString(right) {
 			return left.(string) + right.(string)
 		}
+		if isRune(left) && isRune(right) {
+			return append(left.([]rune), right.([]rune)...)
+		}
 
 		panic(NewRuntimeError(expr.Operator, "Operands must be two numbers or two strings."))
 	}

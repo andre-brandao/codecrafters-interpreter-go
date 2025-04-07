@@ -38,6 +38,11 @@ func isString(v interface{}) bool {
 	return ok
 }
 
+func isRune(v interface{}) bool {
+    _, ok := v.([]rune)
+    return ok
+}
+
 func isEqual(left, right interface{}) bool {
 	if left == nil && right == nil {
 		return true
