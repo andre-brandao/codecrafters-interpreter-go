@@ -39,8 +39,8 @@ func isString(v interface{}) bool {
 }
 
 func isRune(v interface{}) bool {
-    _, ok := v.([]rune)
-    return ok
+	_, ok := v.([]rune)
+	return ok
 }
 
 func isEqual(left, right interface{}) bool {
@@ -56,13 +56,16 @@ func isEqual(left, right interface{}) bool {
 	if isString(left) && isString(right) {
 		return left.(string) == right.(string)
 	}
+	if isRune(left) && isRune(right) {
+		return string(left.([]rune)) == string(right.([]rune))
+	}
 	return false
 }
 
 func stringfy(obj any) string {
 	switch v := obj.(type) {
 	case float64:
-	    return fmt.Sprintf("%g", v) 
+		return fmt.Sprintf("%g", v)
 		// if v == float64(int(v)) {
 		// 	return fmt.Sprintf("%.1f", v) // Ensures 1234.0 for whole numbers
 		// } else {
@@ -73,7 +76,7 @@ func stringfy(obj any) string {
 	case []rune:
 		return fmt.Sprintf("%s", string(v))
 	case nil:
-	    return "nil"
+		return "nil"
 	default:
 		return fmt.Sprintf("%v", obj)
 	}
