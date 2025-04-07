@@ -57,12 +57,12 @@ func isEqual(left, right interface{}) bool {
 func stringfy(obj any) string {
 	switch v := obj.(type) {
 	case float64:
-		if v == float64(int(v)) {
-			return fmt.Sprintf("%.1f", v) // Ensures 1234.0 for whole numbers
-		} else {
-			return fmt.Sprintf("%g", v) // Keeps the precision for non-whole numbers
-
-		}
+	    return fmt.Sprintf("%g", v) 
+		// if v == float64(int(v)) {
+		// 	return fmt.Sprintf("%.1f", v) // Ensures 1234.0 for whole numbers
+		// } else {
+		// 	return fmt.Sprintf("%g", v) // Keeps the precision for non-whole numbers
+		// }
 	case string:
 		return fmt.Sprintf("%s", v)
 	case []rune:
