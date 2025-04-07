@@ -70,7 +70,7 @@ func runFile(filename string, handler LoxHandler) {
 
 		os.Exit(0)
 	} else {
-		fmt.Println("<|EMPTY FILE|>")
+		fmt.Println("EOF  null")
 		os.Exit(0)
 	}
 }
