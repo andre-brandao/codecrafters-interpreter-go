@@ -133,7 +133,7 @@ func (p *Parser) primary() (Expr, error) {
 		return NewGrouping(expr), nil
 	}
 	// return nil, fmt.Errorf("Expect expression.", p.peek().Line)
-	return nil, FmtError(p.peek(), "Expect expression.")
+	return nil, p.Error(p.peek(), "Expect expression.")
 }
 
 func (p *Parser) match(types ...TokenType) bool {
