@@ -36,6 +36,10 @@ func (p *AstPrinter) VisitLiteralExpr(expr *Literal) interface{} {
 			return fmt.Sprintf("%g", v) // Keeps the precision for non-whole numbers
 
 		}
+	case string:
+		return fmt.Sprintf("%s", v)
+	case []rune:
+		return fmt.Sprintf("%s", string(v))
 	default:
 		return fmt.Sprintf("%v", expr.Value)
 	}
