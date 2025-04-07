@@ -11,7 +11,7 @@ var hadRuntimeError = false
 
 func report(line int, where string, message string) {
 	// fmt.Printf("[line %d] Error: %s\n", line, message)
-	fmt.Fprintf(os.Stderr, "[line %d] Error %s: %s\n", line, where, message)
+	fmt.Fprintf(os.Stderr, "[line %d] Error%s: %s\n", line, where, message)
 
 	hadError = true
 }
@@ -19,9 +19,9 @@ func report(line int, where string, message string) {
 func Error(token Token, message string) {
 	// report(line, "", message)
 	if token.Type == EOF {
-		report(token.Line, "at end", message)
+		report(token.Line, " at end", message)
 	} else {
-		report(token.Line, fmt.Sprintf("at '%s'", string(token.Lexeme)), message)
+		report(token.Line, fmt.Sprintf(" at '%s'", string(token.Lexeme)), message)
 	}
 }
 
