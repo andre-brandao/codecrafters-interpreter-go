@@ -67,6 +67,8 @@ func runFile(filename string, handler LoxHandler) {
 		if hadError {
 			os.Exit(65)
 		}
+
+		os.Exit(0)
 	} else {
 		fmt.Println("EOF  null")
 	}
@@ -119,6 +121,8 @@ func main() {
 			fmt.Println(printer.Print(expr))
 
 		})
+		os.Exit(0)
+		return
 	}
 
 	if command == "ast" {
@@ -131,7 +135,7 @@ func main() {
 
 	}
 
-	fmt.Fprintf(os.Stderr, "Unknown command: %s\n", command)
+	//fmt.Fprintf(os.Stderr, "Unknown command: %s\n", command)
 	os.Exit(1)
 
 }
