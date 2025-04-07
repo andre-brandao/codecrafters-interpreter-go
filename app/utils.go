@@ -67,6 +67,8 @@ func stringfy(obj any) string {
 		return fmt.Sprintf("%s", v)
 	case []rune:
 		return fmt.Sprintf("%s", string(v))
+	case nil:
+	    return "nil"
 	default:
 		return fmt.Sprintf("%v", obj)
 	}
