@@ -9,7 +9,7 @@ var hadError = false
 
 func report(line int, where string, message string) {
 	// fmt.Printf("[line %d] Error: %s\n", line, message)
-	fmt.Fprintf(os.Stderr, "[line %d] Error: %s\n", line, message)
+	fmt.Fprintf(os.Stderr, "[line %d] Error %s: %s\n", line, where, message)
 
 	hadError = true
 }
@@ -17,9 +17,9 @@ func report(line int, where string, message string) {
 func Error(token Token, message string) {
 	// report(line, "", message)
 	if token.Type == EOF {
-		report(token.Line, " at end", message)
+		report(token.Line, "at end", message)
 	} else {
-		report(token.Line, fmt.Sprintf(" at '%v'", token.Lexeme), message)
+		report(token.Line, fmt.Sprintf("at '%s'", string(token.Lexeme)), message)
 	}
 }
 
@@ -109,14 +109,17 @@ func main() {
 
 			p := NewParser(tokens)
 
-			expr, err := p.Parse()
-			// fmt.Print(expr)
+			defer func() {
+				if r := recover(); r != nil {
+					// fmt.Println("recovered")
+					// fmt.Fprint(os.Stderr, r)
+					hadError = true
 
-			if err != nil {
-				// fmt.Println("Error parsing:", err)
-				fmt.Fprint(os.Stderr, err)
+				}
+			}()
+			expr := p.Parse()
 
-				hadError = true
+			if hadError {
 				return
 			}
 
@@ -129,17 +132,6 @@ func main() {
 		return
 	}
 
-	if command == "ast" {
-		astPrinter := NewAstPrinter()
-		exp1 := NewUnary(NewToken(MINUS, []rune{'-'}, nil, 1), NewLiteral(123))
-		exp2 := NewGrouping(NewLiteral(45.67))
-
-		exp3 := NewBinary(exp1, NewToken(STAR, []rune{'*'}, nil, 1), exp2)
-		fmt.Println(astPrinter.Print(exp3))
-
-	}
-
-	//fmt.Fprintf(os.Stderr, "Unknown command: %s\n", command)
 	os.Exit(1)
 
 }
