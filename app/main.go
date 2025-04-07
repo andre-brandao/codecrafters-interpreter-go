@@ -70,10 +70,10 @@ func runFile(filename string, handler LoxHandler) {
 			os.Exit(65)
 			return
 		}
-		// if hadRuntimeError {
-		// 	os.Exit(70)
-		// 	return
-		// }
+		if hadRuntimeError {
+			os.Exit(70)
+			return
+		}
 
 		os.Exit(0)
 	} else {
@@ -151,6 +151,7 @@ func main() {
 				return
 			}
 		})
+		return
 	default:
 		fmt.Fprintln(os.Stderr, "Unknown command:", command)
 
