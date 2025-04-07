@@ -113,7 +113,10 @@ func main() {
 			// fmt.Print(expr)
 
 			if err != nil {
-				fmt.Println("Error parsing:", err)
+				// fmt.Println("Error parsing:", err)
+				fmt.Fprint(os.Stderr, err)
+
+				hadError = true
 				return
 			}
 
