@@ -81,7 +81,8 @@ func (s *Scanner) string() {
 	}
 
 	if s.isAtEnd() {
-		error(s.line, "Unterminated string.")
+		// error(s.line, "Unterminated string.")
+		report(s.line, "", "Unterminated string.")
 		return
 	}
 
@@ -106,7 +107,8 @@ func (s *Scanner) number() {
 	numStr := string(s.source[s.start:s.current])
 	val, err := strconv.ParseFloat(numStr, 64)
 	if err != nil {
-		error(s.line, "Invalid number format.")
+		// error(s.line, "Invalid number format.")
+		report(s.line, "", "Invalid number format.")
 		return
 	}
 	s.addToken(NUMBER, val)
@@ -198,7 +200,8 @@ func (s *Scanner) scanToken() {
 		} else if isAlpha(c) {
 			s.identifier()
 		} else {
-			error(s.line, fmt.Sprintf("Unexpected character: %c", c))
+			// error(s.line, fmt.Sprintf("Unexpected character: %c", c))
+			report(s.line, "", fmt.Sprintf("Unexpected character: %c", c))
 		}
 	}
 }

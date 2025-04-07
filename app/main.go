@@ -14,8 +14,13 @@ func report(line int, where string, message string) {
 	hadError = true
 }
 
-func error(line int, message string) {
-	report(line, "", message)
+func Error(token Token, message string) {
+	// report(line, "", message)
+	if token.Type == EOF {
+		report(token.Line, " at end", message)
+	} else {
+		report(token.Line, fmt.Sprintf(" at '%v'", token.Lexeme), message)
+	}
 }
 
 func run(source string) {
@@ -99,9 +104,20 @@ func main() {
 
 			tokens := s.ScanTokens()
 
-			for _, token := range tokens {
-				fmt.Printf(token.String())
+			p := NewParser(tokens)
+
+			expr, err := p.Parse()
+			// fmt.Print(expr)
+
+			if err != nil {
+				fmt.Println("Error parsing:", err)
+				return
 			}
+
+			printer := NewAstPrinter()
+
+			fmt.Println(printer.Print(expr))
+
 		})
 	}
 
