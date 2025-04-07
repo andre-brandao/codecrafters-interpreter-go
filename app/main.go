@@ -7,6 +7,8 @@ import (
 
 var hadError = false
 
+var hadRuntimeError = false
+
 func report(line int, where string, message string) {
 	// fmt.Printf("[line %d] Error: %s\n", line, message)
 	fmt.Fprintf(os.Stderr, "[line %d] Error %s: %s\n", line, where, message)
@@ -66,6 +68,11 @@ func runFile(filename string, handler LoxHandler) {
 
 		if hadError {
 			os.Exit(65)
+			return
+		}
+		if hadRuntimeError {
+			os.Exit(70)
+			return
 		}
 
 		os.Exit(0)
@@ -84,12 +91,10 @@ func main() {
 	command := os.Args[1]
 	filename := os.Args[2]
 
-	if command == "repl" {
+	switch command {
+	case "repl":
 		runPrompt()
-		return
-	}
-
-	if command == "tokenize" {
+	case "tokenize":
 		runFile(filename, func(source []rune) {
 			s := NewScanner(source)
 
@@ -99,9 +104,8 @@ func main() {
 				fmt.Printf(token.String())
 			}
 		})
-	}
 
-	if command == "parse" {
+	case "parse":
 		runFile(filename, func(source []rune) {
 			s := NewScanner(source)
 
@@ -130,6 +134,26 @@ func main() {
 		})
 		os.Exit(0)
 		return
+	case "evaluate", "eval":
+		runFile(filename, func(source []rune) {
+			s := NewScanner(source)
+			tokens := s.ScanTokens()
+
+			p := NewParser(tokens)
+			expr := p.Parse()
+
+			if hadError {
+				return
+			}
+			interpreter := NewInterpreter()
+			interpreter.Interpret(expr)
+			if hadRuntimeError {
+				return
+			}
+		})
+	default:
+		fmt.Fprintln(os.Stderr, "Unknown command:", command)
+
 	}
 
 	os.Exit(1)
