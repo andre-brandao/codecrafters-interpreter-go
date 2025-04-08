@@ -1,6 +1,19 @@
+var world = "global world";
+var baz = "global baz";
+var foo = "global foo";
 {
-     var world = 41;
-     var quz = 41;
-     {
-         print world + quz;
- }
+  var world = "outer world";
+  var baz = "outer baz";
+  {
+    var world = "inner world";
+    print world;
+    print baz;
+    print foo;
+  }
+  print world;
+  print baz;
+  print foo;
+}
+print world;
+print baz;
+print foo;
