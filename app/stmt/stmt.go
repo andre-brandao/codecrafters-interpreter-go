@@ -6,29 +6,29 @@ import (
 )
 
 type StmtVisitor interface {
-	VisitPrintStmt(stmt *Print) interface{}
-	VisitExpressionStmt(stmt *Expression) interface{}
-	VisitVarStmt(stmt *Var) interface{}
-	// VisitVariableStmt(stmt *Variable) interface{}
-	// VisitUnaryStmt(stmt *UnaryStmt) interface{}
-	VisitBlockStmt(stmt *Block) interface{}
-	VisitIfStmt(stmt *If) interface{}
-	VisitWhileStmt(stmt *While) interface{}
-	// VisitForStmt(stmt *For) interface{}
-	// VisitClassStmt(stmt *Class) interface{}
-	// VisitFunctionStmt(stmt *Function) interface{}
+	VisitPrintStmt(stmt *Print) any
+	VisitExpressionStmt(stmt *Expression) any
+	VisitVarStmt(stmt *Var) any
+	// VisitVariableStmt(stmt *Variable) any
+	// VisitUnaryStmt(stmt *UnaryStmt) any
+	VisitBlockStmt(stmt *Block) any
+	VisitIfStmt(stmt *If) any
+	VisitWhileStmt(stmt *While) any
+	// VisitForStmt(stmt *For) any
+	// VisitClassStmt(stmt *Class) any
+	VisitFunctionStmt(stmt *Function) any
 	// VisitReturnStmt(stmt *Return) interface{}
 }
 
 type Stmt interface {
-	Accept(visitor StmtVisitor) interface{}
+	Accept(visitor StmtVisitor) any
 }
 
 type Expression struct {
 	Expression expr.Expr
 }
 
-func (e *Expression) Accept(visitor StmtVisitor) interface{} {
+func (e *Expression) Accept(visitor StmtVisitor) any {
 	return visitor.VisitExpressionStmt(e)
 }
 
@@ -38,7 +38,7 @@ type Print struct {
 	Expression expr.Expr
 }
 
-func (p *Print) Accept(visitor StmtVisitor) interface{} {
+func (p *Print) Accept(visitor StmtVisitor) any {
 	return visitor.VisitPrintStmt(p)
 }
 
@@ -49,7 +49,7 @@ type Var struct {
 	Initializer expr.Expr
 }
 
-func (v *Var) Accept(visitor StmtVisitor) interface{} {
+func (v *Var) Accept(visitor StmtVisitor) any {
 	return visitor.VisitVarStmt(v)
 }
 
@@ -80,7 +80,7 @@ type Block struct {
 	Statements []Stmt
 }
 
-func (b *Block) Accept(visitor StmtVisitor) interface{} {
+func (b *Block) Accept(visitor StmtVisitor) any {
 	return visitor.VisitBlockStmt(b)
 }
 
@@ -92,7 +92,7 @@ type If struct {
 	ElseBranch Stmt
 }
 
-func (i *If) Accept(visitor StmtVisitor) interface{} {
+func (i *If) Accept(visitor StmtVisitor) any {
 	return visitor.VisitIfStmt(i)
 }
 
@@ -109,17 +109,6 @@ var _ Stmt = &If{}
 // }
 
 // var _ Stmt = &Class{}
-// type Function struct {
-// 	Name   Token
-// 	Params []Token
-// 	Body   []Stmt
-// }
-
-// func (f *Function) Accept(visitor StmtVisitor) interface{} {
-// 	return visitor.VisitFunctionStmt(f)
-// }
-
-// var _ Stmt = &Function{}
 
 // type Return struct {
 // 	Keyword Token
@@ -137,16 +126,20 @@ type While struct {
 	Body      Stmt
 }
 
-func (w *While) Accept(visitor StmtVisitor) interface{} {
+func (w *While) Accept(visitor StmtVisitor) any {
 	return visitor.VisitWhileStmt(w)
 }
 
 var _ Stmt = &While{}
 
-// type For struct {
+type Function struct {
+	Name   token.Token
+	Params []token.Token
+	Body   []Stmt
+}
 
-// }
+func (f *Function) Accept(visitor StmtVisitor) any {
+	return visitor.VisitFunctionStmt(f)
+}
 
-// func (f *For) Accept(visitor StmtVisitor) interface{} {
-//     return visitor.VisitForStmt(f)
-// }
+var _ Stmt = &Function{}

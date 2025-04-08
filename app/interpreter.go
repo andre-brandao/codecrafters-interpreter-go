@@ -164,7 +164,7 @@ func (i *Interpreter) VisitCallExpr(expr *exp.Call) any {
 	return function.call(i, arguments)
 }
 
-func (i *Interpreter) VisitUnaryExpr(expr *exp.Unary) interface{} {
+func (i *Interpreter) VisitUnaryExpr(expr *exp.Unary) any {
 	right := i.evaluate(expr.Right)
 
 	switch t := expr.Operator.Type; t {
@@ -182,15 +182,15 @@ func (i *Interpreter) VisitUnaryExpr(expr *exp.Unary) interface{} {
 //	func (i *Interpreter) VisitVarExpr(expr *exp.Var) interface{} {
 //		return i.enviroment.Get(expr.Name)
 //	}
-func (i *Interpreter) VisitVariableExpr(expr *exp.Variable) interface{} {
+func (i *Interpreter) VisitVariableExpr(expr *exp.Variable) any {
 	return i.enviroment.Get(expr.Name)
 }
 
-func (i *Interpreter) evaluate(expr exp.Expr) interface{} {
+func (i *Interpreter) evaluate(expr exp.Expr) any {
 	return expr.Accept(i)
 }
 
-func (i *Interpreter) execute(stmt st.Stmt) interface{} {
+func (i *Interpreter) execute(stmt st.Stmt) any {
 	return stmt.Accept(i)
 }
 func (i *Interpreter) executeBlock(statements []st.Stmt, environment *env.Environment) {
@@ -207,30 +207,36 @@ func (i *Interpreter) executeBlock(statements []st.Stmt, environment *env.Enviro
 	}
 }
 
-func (i *Interpreter) VisitBlockStmt(stmt *st.Block) interface{} {
+func (i *Interpreter) VisitBlockStmt(stmt *st.Block) any {
 	i.executeBlock(stmt.Statements, env.NewEnvironment(i.enviroment))
 	return nil
 }
 
-func checkNumberOperand(operator tok.Token, operand interface{}) {
+func checkNumberOperand(operator tok.Token, operand any) {
 	if !isNumber(operand) {
 		panic(err.NewRuntimeError(operator, "Operand must be a number."))
 	}
 }
 
-func checkNumberOperands(operator tok.Token, left, right interface{}) {
+func checkNumberOperands(operator tok.Token, left, right any) {
 	if !isNumber(left) || !isNumber(right) {
 		panic(err.NewRuntimeError(operator, "Operands must be numbers."))
 	}
 }
 
 // Stmt Visitor
-func (i *Interpreter) VisitExpressionStmt(stmt *st.Expression) interface{} {
+func (i *Interpreter) VisitExpressionStmt(stmt *st.Expression) any {
 	i.evaluate(stmt.Expression)
 	return nil
 }
 
-func (i *Interpreter) VisitIfStmt(stmt *st.If) interface{} {
+func (i *Interpreter) VisitFunctionStmt(stmt *st.Function) any {
+	function := NewLoxFunction(stmt)
+	i.enviroment.Define(string(stmt.Name.Lexeme), function)
+	return nil
+}
+
+func (i *Interpreter) VisitIfStmt(stmt *st.If) any {
 	if isTruthy(i.evaluate(stmt.Condition)) {
 		i.execute(stmt.ThenBranch)
 	} else if stmt.ElseBranch != nil {
@@ -239,13 +245,13 @@ func (i *Interpreter) VisitIfStmt(stmt *st.If) interface{} {
 	return nil
 }
 
-func (i *Interpreter) VisitPrintStmt(stmt *st.Print) interface{} {
+func (i *Interpreter) VisitPrintStmt(stmt *st.Print) any {
 	value := i.evaluate(stmt.Expression)
 	fmt.Println(stringfy(value))
 	return nil
 }
 
-func (i *Interpreter) VisitVarStmt(stmt *st.Var) interface{} {
+func (i *Interpreter) VisitVarStmt(stmt *st.Var) any {
 	var value any = nil
 
 	if stmt.Initializer != nil {
@@ -255,14 +261,14 @@ func (i *Interpreter) VisitVarStmt(stmt *st.Var) interface{} {
 	return nil
 }
 
-func (i *Interpreter) VisitWhileStmt(stmt *st.While) interface{} {
+func (i *Interpreter) VisitWhileStmt(stmt *st.While) any {
 	for isTruthy(i.evaluate(stmt.Condition)) {
 		i.execute(stmt.Body)
 	}
 
 	return nil
 }
-func (i *Interpreter) VisitAssignExpr(expr *exp.Assign) interface{} {
+func (i *Interpreter) VisitAssignExpr(expr *exp.Assign) any {
 	value := i.evaluate(expr.Value)
 
 	i.enviroment.Assign(expr.Name, value)

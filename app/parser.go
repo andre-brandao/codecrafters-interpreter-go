@@ -52,6 +52,10 @@ func (p *Parser) declaration() st.Stmt {
 		}
 	}()
 
+	if p.match(tok.FUN) {
+		return p.function("function")
+	}
+
 	if p.match(tok.VAR) {
 		return p.varDeclaration()
 	}
@@ -204,6 +208,37 @@ func (p *Parser) expressionStatement() st.Stmt {
 	p.consume(tok.SEMICOLON, "Expect ';' after expression.")
 	return &st.Expression{
 		Expression: expr,
+	}
+}
+
+func (p *Parser) function(kind string) *st.Function {
+	name := p.consume(tok.IDENTIFIER, fmt.Sprintf("Expected %s name.", kind))
+
+	p.consume(tok.LEFT_PAREN, fmt.Sprintf("Expect '(' after %s name.", kind))
+	parameters := make([]tok.Token, 0)
+	if !p.check(tok.RIGHT_PAREN) {
+		for {
+			if len(parameters) >= 255 {
+				p.Error(p.peek(), "Can't have more than 255 parameters.")
+			}
+			parameters = append(parameters, p.consume(tok.IDENTIFIER, "Expect parameter name."))
+			// if
+			if !p.match(tok.COMMA) {
+				break
+			}
+		}
+	}
+
+	p.consume(tok.RIGHT_PAREN, "Expect ')' after parameters.")
+
+	p.consume(tok.LEFT_BRACE, fmt.Sprintf("Expect '{' before %s body.", kind))
+
+	body := p.block()
+
+	return &st.Function{
+		Name:   name,
+		Params: parameters,
+		Body:   body,
 	}
 }
 
