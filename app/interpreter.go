@@ -242,13 +242,13 @@ func (i *Interpreter) VisitAssignExpr(expr *exp.Assign) interface{} {
 	return value
 }
 
-func (i *Interpreter) VisitUnaryStmt(stmt *st.UnaryStmt) interface{} {
-	return nil
-}
+// func (i *Interpreter) VisitUnaryStmt(stmt *st.UnaryStmt) interface{} {
+// 	return nil
+// }
 
-func (i *Interpreter) VisitVariableStmt(stmt *st.Variable) interface{} {
-	return nil
-}
+// func (i *Interpreter) VisitVariableStmt(stmt *st.Variable) interface{} {
+// 	return nil
+// }
 
 // func (i *Interpreter) VisitBlockStmt(stmt *Block) interface{} {
 // 	return nil

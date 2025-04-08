@@ -9,11 +9,12 @@ type StmtVisitor interface {
 	VisitPrintStmt(stmt *Print) interface{}
 	VisitExpressionStmt(stmt *Expression) interface{}
 	VisitVarStmt(stmt *Var) interface{}
-	VisitVariableStmt(stmt *Variable) interface{}
-	VisitUnaryStmt(stmt *UnaryStmt) interface{}
+	// VisitVariableStmt(stmt *Variable) interface{}
+	// VisitUnaryStmt(stmt *UnaryStmt) interface{}
 	VisitBlockStmt(stmt *Block) interface{}
 	VisitIfStmt(stmt *If) interface{}
 	VisitWhileStmt(stmt *While) interface{}
+	// VisitForStmt(stmt *For) interface{}
 	// VisitClassStmt(stmt *Class) interface{}
 	// VisitFunctionStmt(stmt *Function) interface{}
 	// VisitReturnStmt(stmt *Return) interface{}
@@ -54,26 +55,26 @@ func (v *Var) Accept(visitor StmtVisitor) interface{} {
 
 var _ Stmt = &Var{}
 
-type UnaryStmt struct {
-	operator token.Token
-	right    expr.Expr
-}
+// type UnaryStmt struct {
+// 	operator token.Token
+// 	right    expr.Expr
+// }
 
-func (u *UnaryStmt) Accept(visitor StmtVisitor) interface{} {
-	return visitor.VisitUnaryStmt(u)
-}
+// func (u *UnaryStmt) Accept(visitor StmtVisitor) interface{} {
+// 	return visitor.VisitUnaryStmt(u)
+// }
 
-var _ Stmt = &UnaryStmt{}
+// var _ Stmt = &UnaryStmt{}
 
-type Variable struct {
-	Name token.Token
-}
+// type Variable struct {
+// 	Name token.Token
+// }
 
-func (v *Variable) Accept(visitor StmtVisitor) interface{} {
-	return visitor.VisitVariableStmt(v)
-}
+// func (v *Variable) Accept(visitor StmtVisitor) interface{} {
+// 	return visitor.VisitVariableStmt(v)
+// }
 
-var _ Stmt = &Variable{}
+// var _ Stmt = &Variable{}
 
 type Block struct {
 	Statements []Stmt
@@ -141,3 +142,11 @@ func (w *While) Accept(visitor StmtVisitor) interface{} {
 }
 
 var _ Stmt = &While{}
+
+// type For struct {
+
+// }
+
+// func (f *For) Accept(visitor StmtVisitor) interface{} {
+//     return visitor.VisitForStmt(f)
+// }
