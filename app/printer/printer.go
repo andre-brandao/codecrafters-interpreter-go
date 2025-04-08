@@ -69,6 +69,10 @@ func (p *AstPrinter) VisitLogicalExpr(expr *exp.Logical) interface{} {
 	return nil
 }
 
+func (p *AstPrinter) VisitCallExpr(expr *exp.Call) interface{} {
+	return nil
+}
+
 func (p *AstPrinter) parenthesize(name string, exprs ...exp.Expr) string {
 	var result string
 	result += "(" + name

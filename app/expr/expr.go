@@ -5,14 +5,15 @@ import (
 )
 
 type ExprVisitor interface {
-	VisitBinaryExpr(expr *Binary) interface{}
-	VisitGroupingExpr(expr *Grouping) interface{}
-	VisitLiteralExpr(expr *Literal) interface{}
-	VisitUnaryExpr(expr *Unary) interface{}
-	// VisitVarExpr(expr *Var) interface{}
-	VisitVariableExpr(expr *Variable) interface{}
-	VisitAssignExpr(expr *Assign) interface{}
-	VisitLogicalExpr(expr *Logical) interface{}
+	VisitBinaryExpr(expr *Binary) any
+	VisitGroupingExpr(expr *Grouping) any
+	VisitLiteralExpr(expr *Literal) any
+	VisitUnaryExpr(expr *Unary) any
+	// VisitVarExpr(expr *Var) any
+	VisitCallExpr(expr *Call) any
+	VisitVariableExpr(expr *Variable) any
+	VisitAssignExpr(expr *Assign) any
+	VisitLogicalExpr(expr *Logical) any
 }
 
 // EXPR
@@ -97,7 +98,6 @@ func (a *Assign) Accept(visitor ExprVisitor) interface{} {
 
 var _ Expr = (*Assign)(nil)
 
-
 type Logical struct {
 	Left     Expr
 	Operator token.Token
@@ -109,3 +109,15 @@ func (l *Logical) Accept(visitor ExprVisitor) interface{} {
 }
 
 var _ Expr = (*Logical)(nil)
+
+type Call struct {
+	Callee    Expr
+	Paren     token.Token
+	Arguments []Expr
+}
+
+func (c *Call) Accept(visitor ExprVisitor) interface{} {
+	return visitor.VisitCallExpr(c)
+}
+
+var _ Expr = (*Call)(nil)

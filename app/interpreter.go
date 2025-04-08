@@ -12,12 +12,17 @@ import (
 )
 
 type Interpreter struct {
+	Globals    env.Environment
 	enviroment *env.Environment
 }
 
 func NewInterpreter() *Interpreter {
+	globals := *env.NewEnvironment(nil)
+
+	globals.Define("clock", &clock{})
 	return &Interpreter{
-		enviroment: env.NewEnvironment(nil),
+		Globals:    globals,
+		enviroment: &globals,
 	}
 }
 
@@ -137,6 +142,28 @@ func (i *Interpreter) VisitBinaryExpr(expr *exp.Binary) interface{} {
 	return nil
 }
 
+func (i *Interpreter) VisitCallExpr(expr *exp.Call) any {
+	callee := i.evaluate(expr.Callee)
+
+	arguments := make([]any, 0)
+
+	for _, arg := range expr.Arguments {
+		arguments = append(arguments, i.evaluate(arg))
+	}
+
+	function, ok := callee.(LoxCallable)
+
+	if len(arguments) != function.arity() {
+		panic(err.NewRuntimeError(expr.Paren, fmt.Sprintf("Expected %d arguments but got %d.", function.arity(), len(arguments))))
+	}
+
+	if !ok {
+		panic(err.NewRuntimeError(expr.Paren, "Can only call functions and classes."))
+	}
+
+	return function.call(i, arguments)
+}
+
 func (i *Interpreter) VisitUnaryExpr(expr *exp.Unary) interface{} {
 	right := i.evaluate(expr.Right)
 
@@ -152,9 +179,9 @@ func (i *Interpreter) VisitUnaryExpr(expr *exp.Unary) interface{} {
 	return nil
 }
 
-// func (i *Interpreter) VisitVarExpr(expr *exp.Var) interface{} {
-// 	return i.enviroment.Get(expr.Name)
-// }
+//	func (i *Interpreter) VisitVarExpr(expr *exp.Var) interface{} {
+//		return i.enviroment.Get(expr.Name)
+//	}
 func (i *Interpreter) VisitVariableExpr(expr *exp.Variable) interface{} {
 	return i.enviroment.Get(expr.Name)
 }

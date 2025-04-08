@@ -351,7 +351,46 @@ func (p *Parser) unary() exp.Expr {
 			Right:    right,
 		}
 	}
-	return p.primary()
+	// return p.primary()
+	return p.call()
+}
+
+func (p *Parser) finishCall(callee exp.Expr) exp.Expr {
+	arguments := make([]exp.Expr, 0)
+
+	if !p.check(tok.RIGHT_PAREN) {
+		for {
+			if len(arguments) >= 255 {
+				p.Error(p.peek(), "Can't have more than 255 arguments.")
+			}
+
+			arguments = append(arguments, p.expression())
+			if !p.match(tok.COMMA) {
+				break
+			}
+		}
+
+	}
+
+	paren := p.consume(tok.RIGHT_PAREN, "Expect ')' after arguments.")
+
+	return &exp.Call{
+		Callee:    callee,
+		Paren:     paren,
+		Arguments: arguments,
+	}
+}
+
+func (p *Parser) call() exp.Expr {
+	expr := p.primary()
+	for true {
+		if p.match(tok.LEFT_PAREN) {
+			expr = p.finishCall(expr)
+		} else {
+			break
+		}
+	}
+	return expr
 }
 
 func (p *Parser) primary() exp.Expr {
