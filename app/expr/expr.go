@@ -12,6 +12,7 @@ type ExprVisitor interface {
 	VisitVarExpr(expr *Var) interface{}
 	VisitVariableExpr(expr *Variable) interface{}
 	VisitAssignExpr(expr *Assign) interface{}
+	VisitLogicalExpr(expr *Logical) interface{}
 }
 
 // EXPR
@@ -86,10 +87,25 @@ func (v *Variable) Accept(visitor ExprVisitor) interface{} {
 }
 
 type Assign struct {
-    Name  token.Token
-    Value Expr
+	Name  token.Token
+	Value Expr
 }
+
 func (a *Assign) Accept(visitor ExprVisitor) interface{} {
-    return visitor.VisitAssignExpr(a)
+	return visitor.VisitAssignExpr(a)
 }
+
 var _ Expr = (*Assign)(nil)
+
+
+type Logical struct {
+	Left     Expr
+	Operator token.Token
+	Right    Expr
+}
+
+func (l *Logical) Accept(visitor ExprVisitor) interface{} {
+	return visitor.VisitLogicalExpr(l)
+}
+
+var _ Expr = (*Logical)(nil)

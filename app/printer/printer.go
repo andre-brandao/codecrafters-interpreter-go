@@ -64,6 +64,11 @@ func (p *AstPrinter) VisitAssignExpr(expr *exp.Assign) interface{} {
 	return nil
 }
 
+func (p *AstPrinter) VisitLogicalExpr(expr *exp.Logical) interface{} {
+	// return p.parenthesize(string(expr.Operator.Lexeme), expr.Left, expr.Right)
+	return nil
+}
+
 func (p *AstPrinter) parenthesize(name string, exprs ...exp.Expr) string {
 	var result string
 	result += "(" + name

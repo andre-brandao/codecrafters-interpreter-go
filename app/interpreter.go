@@ -66,6 +66,21 @@ func (i *Interpreter) Interpret(statements []st.Stmt) {
 func (i *Interpreter) VisitLiteralExpr(expr *exp.Literal) interface{} {
 	return expr.Value
 }
+func (i *Interpreter) VisitLogicalExpr(expr *exp.Logical) interface{} {
+	left := i.evaluate(expr.Left)
+
+	if expr.Operator.Type == tok.OR {
+		if isTruthy(left) {
+			return left
+		}
+	} else {
+		if !isTruthy(left) {
+			return left
+		}
+	}
+
+	return i.evaluate(expr.Right)
+}
 
 func (i *Interpreter) VisitGroupingExpr(expr *exp.Grouping) interface{} {
 	return i.evaluate(expr.Expression)

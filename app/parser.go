@@ -138,7 +138,9 @@ func (p *Parser) block() []st.Stmt {
 }
 
 func (p *Parser) assignment() exp.Expr {
-	expr := p.equality()
+	// expr := p.equality()
+	expr := p.or()
+
 	if p.match(tok.EQUAL) {
 		equals := p.previous()
 		value := p.assignment()
@@ -156,6 +158,39 @@ func (p *Parser) assignment() exp.Expr {
 	}
 	return expr
 }
+
+func (p *Parser) or() exp.Expr {
+	expr := p.and()
+	for p.match(tok.OR) {
+		operator := p.previous()
+		right := p.and()
+
+		expr = &exp.Logical{
+			Left:     expr,
+			Operator: operator,
+			Right:    right,
+		}
+	}
+
+	return expr
+}
+
+func (p *Parser) and() exp.Expr {
+	expr := p.equality()
+	for p.match(tok.AND) {
+		operator := p.previous()
+		right := p.equality()
+
+		expr = &exp.Logical{
+			Left:     expr,
+			Operator: operator,
+			Right:    right,
+		}
+	}
+
+	return expr
+}
+
 func (p *Parser) equality() exp.Expr {
 	expr := p.comparison()
 
