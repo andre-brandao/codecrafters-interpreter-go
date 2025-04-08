@@ -12,7 +12,7 @@ func NewInterpreter() *Interpreter {
 	return &Interpreter{}
 }
 
-func (i *Interpreter) Interpret(expr Expr) {
+func (i *Interpreter) InterpretExpression(expr Expr) {
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -32,6 +32,24 @@ func (i *Interpreter) Interpret(expr Expr) {
 	value := i.evaluate(expr)
 
 	fmt.Print(stringfy(value))
+}
+
+func (i *Interpreter) Interpret(statements []Stmt) {
+	defer func() {
+		if r := recover(); r != nil {
+			runTimeError, ok := r.(*RuntimeError)
+			if ok {
+				fmt.Fprint(os.Stderr, runTimeError.Error())
+			} else {
+				fmt.Fprint(os.Stderr, "Unknown error")
+			}
+			hadRuntimeError = true
+		}
+	}()
+	
+	for _, statement := range statements {
+        i.execute(statement)
+    }
 }
 
 func (i *Interpreter) VisitLiteralExpr(expr *Literal) interface{} {
@@ -112,7 +130,9 @@ func (i *Interpreter) evaluate(expr Expr) interface{} {
 	return expr.Accept(i)
 }
 
-var _ ExprVisitor = (*Interpreter)(nil)
+func (i *Interpreter) execute(stmt Stmt) interface{} {
+    return stmt.Accept(i)
+}
 
 func checkNumberOperand(operator Token, operand interface{}) {
 	if !isNumber(operand) {
@@ -125,3 +145,43 @@ func checkNumberOperands(operator Token, left, right interface{}) {
 		panic(NewRuntimeError(operator, "Operands must be numbers."))
 	}
 }
+
+// Stmt Visitor
+func (i *Interpreter) VisitExpressionStmt(stmt *Expression) interface{} {
+	i.evaluate(stmt.Expression)
+	return nil
+}
+
+func (i *Interpreter) VisitPrintStmt(stmt *Print) interface{} {
+	value := i.evaluate(stmt.Expression)
+	fmt.Println(stringfy(value))
+	return nil
+}
+
+// func (i *Interpreter) VisitBlockStmt(stmt *Block) interface{} {
+// 	return nil
+// }
+// func (i *Interpreter) VisitIfStmt(stmt *If) interface{} {
+// 	return nil
+// }
+
+// func (i *Interpreter) VisitClassStmt(stmt *Class) interface{} {
+// 	return nil
+// }
+// func (i *Interpreter) VisitFunctionStmt(stmt *Function) interface{} {
+// 	return nil
+// }
+
+// func (i *Interpreter) VisitWhileStmt(stmt *While) interface{} {
+// 	return nil
+// }
+// func (i *Interpreter) VisitReturnStmt(stmt *Return) interface{} {
+// 	return nil
+// }
+
+// func (i *Interpreter) VisitVarStmt(stmt *Var) interface{} {
+// 	return nil
+// }
+
+var _ ExprVisitor = (*Interpreter)(nil)
+var _ StmtVisitor = (*Interpreter)(nil)

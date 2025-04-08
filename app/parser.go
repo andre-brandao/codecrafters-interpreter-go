@@ -15,9 +15,19 @@ func NewParser(tokens []Token) *Parser {
 		current: 0,
 	}
 }
-
-func (p *Parser) Parse() Expr {
+func (p *Parser) EvalExpression() Expr {
 	return p.expression()
+}
+
+func (p *Parser) Parse() []Stmt {
+	// create an arraylist of statements
+	statements := make([]Stmt, 0)
+
+	for !p.isAtEnd() {
+		statements = append(statements, p.statement())
+	}
+	// return p.expression()
+	return statements
 }
 
 func (p *Parser) isAtEnd() bool {
@@ -26,6 +36,30 @@ func (p *Parser) isAtEnd() bool {
 
 func (p *Parser) expression() Expr {
 	return p.equality()
+}
+
+func (p *Parser) statement() Stmt {
+	if p.match(PRINT) {
+		return p.printStatement()
+	}
+
+	return p.expressionStatement()
+}
+
+func (p *Parser) printStatement() Stmt {
+	value := p.expression()
+	p.consume(SEMICOLON, "Expect ';' after value.")
+	return &Print{
+		Expression: value,
+	}
+}
+
+func (p *Parser) expressionStatement() Stmt {
+	expr := p.expression()
+	p.consume(SEMICOLON, "Expect ';' after expression.")
+	return &Expression{
+		Expression: expr,
+	}
 }
 
 func (p *Parser) equality() Expr {
@@ -103,7 +137,6 @@ func (p *Parser) primary() Expr {
 	}
 	if p.match(LEFT_PAREN) {
 		expr := p.expression()
-
 
 		p.consume(RIGHT_PAREN, "Expect ')' after expression.")
 		return NewGrouping(expr)

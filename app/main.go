@@ -121,7 +121,7 @@ func main() {
 
 				}
 			}()
-			expr := p.Parse()
+			expr := p.EvalExpression()
 
 			if hadError {
 				return
