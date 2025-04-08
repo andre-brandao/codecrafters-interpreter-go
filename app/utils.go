@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func isDigit(c rune) bool {
 	return c >= '0' && c <= '9'
@@ -74,12 +77,15 @@ func isEqual(left, right interface{}) bool {
 func stringfy(obj any) string {
 	switch v := obj.(type) {
 	case float64:
-		return fmt.Sprintf("%g", v)
-		// if v == float64(int(v)) {
-		// 	return fmt.Sprintf("%.1f", v) // Ensures 1234.0 for whole numbers
-		// } else {
-		// 	return fmt.Sprintf("%g", v) // Keeps the precision for non-whole numbers
-		// }
+		s := fmt.Sprintf("%f", v)
+
+		// Trim trailing zeros
+		s = strings.TrimRight(s, "0")
+
+		// Trim the decimal point if it's the last character
+		s = strings.TrimRight(s, ".")
+		return s
+
 	case string:
 		return fmt.Sprintf("%s", v)
 	case []rune:
