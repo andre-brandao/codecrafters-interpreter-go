@@ -24,7 +24,9 @@ func (p *Parser) Parse() []Stmt {
 	statements := make([]Stmt, 0)
 
 	for !p.isAtEnd() {
-		statements = append(statements, p.statement())
+		// statements = append(statements, p.statement())
+		statements = append(statements, p.declaration())
+
 	}
 	// return p.expression()
 	return statements
@@ -38,6 +40,35 @@ func (p *Parser) expression() Expr {
 	return p.equality()
 }
 
+func (p *Parser) declaration() Stmt {
+	defer func() {
+		if r := recover(); r != nil {
+			p.synchronize()
+
+		}
+	}()
+
+	if p.match(VAR) {
+		return p.varDeclaration()
+	}
+
+	return p.statement()
+}
+
+func (p *Parser) varDeclaration() Stmt {
+	name := p.consume(IDENTIFIER, "Expect variable name.")
+
+	var initializer Expr = nil
+	if p.match(EQUAL) {
+		initializer = p.expression()
+	}
+	p.consume(SEMICOLON, "Expect ';' after variable declaration.")
+
+	return &Var{
+		Name:        name,
+		Initializer: initializer,
+	}
+}
 func (p *Parser) statement() Stmt {
 	if p.match(PRINT) {
 		return p.printStatement()
@@ -135,6 +166,11 @@ func (p *Parser) primary() Expr {
 	if p.match(NUMBER, STRING) {
 		return NewLiteral(p.previous().Literal)
 	}
+
+	// if p.match(IDENTIFIER) {
+	// 	return NewVariable(p.previous())
+	// }
+
 	if p.match(LEFT_PAREN) {
 		expr := p.expression()
 

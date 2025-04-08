@@ -46,10 +46,10 @@ func (i *Interpreter) Interpret(statements []Stmt) {
 			hadRuntimeError = true
 		}
 	}()
-	
+
 	for _, statement := range statements {
-        i.execute(statement)
-    }
+		i.execute(statement)
+	}
 }
 
 func (i *Interpreter) VisitLiteralExpr(expr *Literal) interface{} {
@@ -131,7 +131,7 @@ func (i *Interpreter) evaluate(expr Expr) interface{} {
 }
 
 func (i *Interpreter) execute(stmt Stmt) interface{} {
-    return stmt.Accept(i)
+	return stmt.Accept(i)
 }
 
 func checkNumberOperand(operator Token, operand interface{}) {
@@ -158,6 +158,18 @@ func (i *Interpreter) VisitPrintStmt(stmt *Print) interface{} {
 	return nil
 }
 
+func (i *Interpreter) VisitVarStmt(stmt *Var) interface{} {
+	return nil
+}
+
+func (i *Interpreter) VisitUnaryStmt(stmt *UnaryStmt) interface{} {
+    return nil
+}
+
+func (i *Interpreter) VisitVariableStmt(stmt *Variable) interface{} {
+    return nil
+}
+
 // func (i *Interpreter) VisitBlockStmt(stmt *Block) interface{} {
 // 	return nil
 // }
@@ -176,10 +188,6 @@ func (i *Interpreter) VisitPrintStmt(stmt *Print) interface{} {
 // 	return nil
 // }
 // func (i *Interpreter) VisitReturnStmt(stmt *Return) interface{} {
-// 	return nil
-// }
-
-// func (i *Interpreter) VisitVarStmt(stmt *Var) interface{} {
 // 	return nil
 // }
 

@@ -1,5 +1,8 @@
 package main
-
+import (
+	expr "github.com/codecrafters-io/interpreter-starter-go/app/expr"
+	token "github.com/codecrafters-io/interpreter-starter-go/app/token"
+)
 type StmtVisitor interface {
 	VisitPrintStmt(stmt *Print) interface{}
 	VisitExpressionStmt(stmt *Expression) interface{}
@@ -19,7 +22,7 @@ type Stmt interface {
 }
 
 type Expression struct {
-	Expression Expr
+	Expression expr.Expr
 }
 
 func (e *Expression) Accept(visitor StmtVisitor) interface{} {
@@ -29,7 +32,7 @@ func (e *Expression) Accept(visitor StmtVisitor) interface{} {
 var _ Stmt = &Expression{}
 
 type Print struct {
-	Expression Expr
+	Expression expr.Expr
 }
 
 func (p *Print) Accept(visitor StmtVisitor) interface{} {
@@ -39,8 +42,8 @@ func (p *Print) Accept(visitor StmtVisitor) interface{} {
 var _ Stmt = &Print{}
 
 type Var struct {
-	Name        Token
-	Initializer Expr
+	Name        token.Token
+	Initializer expr.Expr
 }
 
 func (v *Var) Accept(visitor StmtVisitor) interface{} {
@@ -50,8 +53,8 @@ func (v *Var) Accept(visitor StmtVisitor) interface{} {
 var _ Stmt = &Var{}
 
 type UnaryStmt struct {
-	operator Token
-	right    Expr
+	operator token.Token
+	right    expr.Expr
 }
 
 func (u *UnaryStmt) Accept(visitor StmtVisitor) interface{} {
@@ -61,7 +64,7 @@ func (u *UnaryStmt) Accept(visitor StmtVisitor) interface{} {
 var _ Stmt = &UnaryStmt{}
 
 type Variable struct {
-	Name Token
+	Name token.Token
 }
 
 func (v *Variable) Accept(visitor StmtVisitor) interface{} {
