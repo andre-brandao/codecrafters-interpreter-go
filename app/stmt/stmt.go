@@ -12,9 +12,9 @@ type StmtVisitor interface {
 	VisitVariableStmt(stmt *Variable) interface{}
 	VisitUnaryStmt(stmt *UnaryStmt) interface{}
 	VisitBlockStmt(stmt *Block) interface{}
+	VisitIfStmt(stmt *If) interface{}
 	// VisitClassStmt(stmt *Class) interface{}
 	// VisitFunctionStmt(stmt *Function) interface{}
-	// VisitIfStmt(stmt *If) interface{}
 	// VisitReturnStmt(stmt *Return) interface{}
 	// VisitWhileStmt(stmt *While) interface{}
 }
@@ -85,6 +85,18 @@ func (b *Block) Accept(visitor StmtVisitor) interface{} {
 
 var _ Stmt = &Block{}
 
+type If struct {
+	Condition  expr.Expr
+	ThenBranch Stmt
+	ElseBranch Stmt
+}
+
+func (i *If) Accept(visitor StmtVisitor) interface{} {
+	return visitor.VisitIfStmt(i)
+}
+
+var _ Stmt = &If{}
+
 // type Class struct {
 // 	Name       Token
 // 	SuperClass *Var
@@ -107,18 +119,6 @@ var _ Stmt = &Block{}
 // }
 
 // var _ Stmt = &Function{}
-
-// type If struct {
-// 	Condition  Expr
-// 	ThenBranch Stmt
-// 	ElseBranch Stmt
-// }
-
-// func (i *If) Accept(visitor StmtVisitor) interface{} {
-// 	return visitor.VisitIfStmt(i)
-// }
-
-// var _ Stmt = &If{}
 
 // type Return struct {
 // 	Keyword Token
