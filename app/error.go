@@ -1,13 +1,17 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	tok "github.com/codecrafters-io/interpreter-starter-go/app/token"
+)
 
 type RuntimeError struct {
 	message string
-	token   Token
+	token   tok.Token
 }
 
-func NewRuntimeError(token Token, message string) *RuntimeError {
+func NewRuntimeError(token tok.Token, message string) *RuntimeError {
 	return &RuntimeError{
 		message: message,
 		token:   token,

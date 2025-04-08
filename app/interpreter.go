@@ -3,6 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
+
+	exp "github.com/codecrafters-io/interpreter-starter-go/app/expr"
+	st "github.com/codecrafters-io/interpreter-starter-go/app/stmt"
+	tok "github.com/codecrafters-io/interpreter-starter-go/app/token"
 )
 
 type Interpreter struct {
@@ -12,7 +16,7 @@ func NewInterpreter() *Interpreter {
 	return &Interpreter{}
 }
 
-func (i *Interpreter) InterpretExpression(expr Expr) {
+func (i *Interpreter) InterpretExpression(expr exp.Expr) {
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -34,7 +38,7 @@ func (i *Interpreter) InterpretExpression(expr Expr) {
 	fmt.Print(stringfy(value))
 }
 
-func (i *Interpreter) Interpret(statements []Stmt) {
+func (i *Interpreter) Interpret(statements []st.Stmt) {
 	defer func() {
 		if r := recover(); r != nil {
 			runTimeError, ok := r.(*RuntimeError)
@@ -52,48 +56,48 @@ func (i *Interpreter) Interpret(statements []Stmt) {
 	}
 }
 
-func (i *Interpreter) VisitLiteralExpr(expr *Literal) interface{} {
+func (i *Interpreter) VisitLiteralExpr(expr *exp.Literal) interface{} {
 	return expr.Value
 }
 
-func (i *Interpreter) VisitGroupingExpr(expr *Grouping) interface{} {
+func (i *Interpreter) VisitGroupingExpr(expr *exp.Grouping) interface{} {
 	return i.evaluate(expr.Expression)
 }
-func (i *Interpreter) VisitBinaryExpr(expr *Binary) interface{} {
+func (i *Interpreter) VisitBinaryExpr(expr *exp.Binary) interface{} {
 	left := i.evaluate(expr.Left)
 	right := i.evaluate(expr.Right)
 
 	switch op := expr.Operator.Type; op {
 
-	case GREATER:
+	case tok.GREATER:
 		checkNumberOperands(expr.Operator, left, right)
 		return left.(float64) > right.(float64)
-	case GREATER_EQUAL:
+	case tok.GREATER_EQUAL:
 		checkNumberOperands(expr.Operator, left, right)
 		return left.(float64) >= right.(float64)
-	case LESS:
+	case tok.LESS:
 		checkNumberOperands(expr.Operator, left, right)
 		return left.(float64) < right.(float64)
-	case LESS_EQUAL:
+	case tok.LESS_EQUAL:
 		checkNumberOperands(expr.Operator, left, right)
 		return left.(float64) <= right.(float64)
-	case MINUS:
+	case tok.MINUS:
 		checkNumberOperands(expr.Operator, left, right)
 		return left.(float64) - right.(float64)
 
-	case SLASH:
+	case tok.SLASH:
 		checkNumberOperands(expr.Operator, left, right)
 		return left.(float64) / right.(float64)
-	case STAR:
+	case tok.STAR:
 		checkNumberOperands(expr.Operator, left, right)
 		return left.(float64) * right.(float64)
 
-	case EQUAL_EQUAL:
+	case tok.EQUAL_EQUAL:
 		return isEqual(left, right)
-	case BANG_EQUAL:
+	case tok.BANG_EQUAL:
 		return !isEqual(left, right)
 
-	case PLUS:
+	case tok.PLUS:
 		if isNumber(left) && isNumber(right) {
 
 			return left.(float64) + right.(float64)
@@ -111,14 +115,14 @@ func (i *Interpreter) VisitBinaryExpr(expr *Binary) interface{} {
 	return nil
 }
 
-func (i *Interpreter) VisitUnaryExpr(expr *Unary) interface{} {
+func (i *Interpreter) VisitUnaryExpr(expr *exp.Unary) interface{} {
 	right := i.evaluate(expr.Right)
 
 	switch t := expr.Operator.Type; t {
-	case MINUS:
+	case tok.MINUS:
 		checkNumberOperand(expr.Operator, right)
 		return -right.(float64)
-	case BANG:
+	case tok.BANG:
 		return !isTruthy(right)
 
 	}
@@ -126,48 +130,48 @@ func (i *Interpreter) VisitUnaryExpr(expr *Unary) interface{} {
 	return nil
 }
 
-func (i *Interpreter) evaluate(expr Expr) interface{} {
+func (i *Interpreter) evaluate(expr exp.Expr) interface{} {
 	return expr.Accept(i)
 }
 
-func (i *Interpreter) execute(stmt Stmt) interface{} {
+func (i *Interpreter) execute(stmt st.Stmt) interface{} {
 	return stmt.Accept(i)
 }
 
-func checkNumberOperand(operator Token, operand interface{}) {
+func checkNumberOperand(operator tok.Token, operand interface{}) {
 	if !isNumber(operand) {
 		panic(NewRuntimeError(operator, "Operand must be a number."))
 	}
 }
 
-func checkNumberOperands(operator Token, left, right interface{}) {
+func checkNumberOperands(operator tok.Token, left, right interface{}) {
 	if !isNumber(left) || !isNumber(right) {
 		panic(NewRuntimeError(operator, "Operands must be numbers."))
 	}
 }
 
 // Stmt Visitor
-func (i *Interpreter) VisitExpressionStmt(stmt *Expression) interface{} {
+func (i *Interpreter) VisitExpressionStmt(stmt *st.Expression) interface{} {
 	i.evaluate(stmt.Expression)
 	return nil
 }
 
-func (i *Interpreter) VisitPrintStmt(stmt *Print) interface{} {
+func (i *Interpreter) VisitPrintStmt(stmt *st.Print) interface{} {
 	value := i.evaluate(stmt.Expression)
 	fmt.Println(stringfy(value))
 	return nil
 }
 
-func (i *Interpreter) VisitVarStmt(stmt *Var) interface{} {
+func (i *Interpreter) VisitVarStmt(stmt *st.Var) interface{} {
 	return nil
 }
 
-func (i *Interpreter) VisitUnaryStmt(stmt *UnaryStmt) interface{} {
-    return nil
+func (i *Interpreter) VisitUnaryStmt(stmt *st.UnaryStmt) interface{} {
+	return nil
 }
 
-func (i *Interpreter) VisitVariableStmt(stmt *Variable) interface{} {
-    return nil
+func (i *Interpreter) VisitVariableStmt(stmt *st.Variable) interface{} {
+	return nil
 }
 
 // func (i *Interpreter) VisitBlockStmt(stmt *Block) interface{} {
@@ -191,5 +195,5 @@ func (i *Interpreter) VisitVariableStmt(stmt *Variable) interface{} {
 // 	return nil
 // }
 
-var _ ExprVisitor = (*Interpreter)(nil)
-var _ StmtVisitor = (*Interpreter)(nil)
+var _ exp.ExprVisitor = (*Interpreter)(nil)
+var _ st.StmtVisitor = (*Interpreter)(nil)

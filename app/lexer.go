@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"strconv"
+
+	tok "github.com/codecrafters-io/interpreter-starter-go/app/token"
 )
 
 type Scanner struct {
 	source  []rune
-	tokens  []Token
+	tokens  []tok.Token
 	start   int
 	current int
 	line    int
@@ -16,7 +18,7 @@ type Scanner struct {
 func NewScanner(source []rune) *Scanner {
 	return &Scanner{
 		source:  source,
-		tokens:  make([]Token, 0),
+		tokens:  make([]tok.Token, 0),
 		start:   0,
 		current: 0,
 		line:    1,
@@ -27,15 +29,15 @@ func (s *Scanner) isAtEnd() bool {
 	return s.current >= len(s.source)
 }
 
-func (s *Scanner) ScanTokens() []Token {
+func (s *Scanner) ScanTokens() []tok.Token {
 	for !s.isAtEnd() {
 		// We are at the beginning of the next lexeme.
 		s.start = s.current
 		s.scanToken()
 	}
 
-	s.tokens = append(s.tokens, Token{
-		Type:    EOF,
+	s.tokens = append(s.tokens, tok.Token{
+		Type:    tok.EOF,
 		Lexeme:  []rune(""),
 		Literal: nil,
 		Line:    s.line,
@@ -88,7 +90,7 @@ func (s *Scanner) string() {
 
 	s.advance()
 	value := s.source[s.start+1 : s.current-1]
-	s.addToken(STRING, value)
+	s.addToken(tok.STRING, value)
 }
 
 func (s *Scanner) number() {
@@ -111,7 +113,7 @@ func (s *Scanner) number() {
 		report(s.line, "", "Invalid number format.")
 		return
 	}
-	s.addToken(NUMBER, val)
+	s.addToken(tok.NUMBER, val)
 }
 
 func (s *Scanner) identifier() {
@@ -120,10 +122,10 @@ func (s *Scanner) identifier() {
 	}
 
 	text := string(s.source[s.start:s.current])
-	type_, ok := keywords[text]
+	type_, ok := tok.Keywords[text]
 
 	if !ok {
-		type_ = IDENTIFIER
+		type_ = tok.IDENTIFIER
 	}
 	s.addToken(type_, nil)
 }
@@ -132,48 +134,48 @@ func (s *Scanner) scanToken() {
 	c := s.advance()
 	switch c {
 	case '(':
-		s.addToken(LEFT_PAREN, nil)
+		s.addToken(tok.LEFT_PAREN, nil)
 	case ')':
-		s.addToken(RIGHT_PAREN, nil)
+		s.addToken(tok.RIGHT_PAREN, nil)
 	case '{':
-		s.addToken(LEFT_BRACE, nil)
+		s.addToken(tok.LEFT_BRACE, nil)
 	case '}':
-		s.addToken(RIGHT_BRACE, nil)
+		s.addToken(tok.RIGHT_BRACE, nil)
 	case ',':
-		s.addToken(COMMA, nil)
+		s.addToken(tok.COMMA, nil)
 	case '.':
-		s.addToken(DOT, nil)
+		s.addToken(tok.DOT, nil)
 	case '-':
-		s.addToken(MINUS, nil)
+		s.addToken(tok.MINUS, nil)
 	case '+':
-		s.addToken(PLUS, nil)
+		s.addToken(tok.PLUS, nil)
 	case ';':
-		s.addToken(SEMICOLON, nil)
+		s.addToken(tok.SEMICOLON, nil)
 	case '*':
-		s.addToken(STAR, nil)
+		s.addToken(tok.STAR, nil)
 	case '!':
 		if s.match('=') {
-			s.addToken(BANG_EQUAL, nil)
+			s.addToken(tok.BANG_EQUAL, nil)
 		} else {
-			s.addToken(BANG, nil)
+			s.addToken(tok.BANG, nil)
 		}
 	case '=':
 		if s.match('=') {
-			s.addToken(EQUAL_EQUAL, nil)
+			s.addToken(tok.EQUAL_EQUAL, nil)
 		} else {
-			s.addToken(EQUAL, nil)
+			s.addToken(tok.EQUAL, nil)
 		}
 	case '<':
 		if s.match('=') {
-			s.addToken(LESS_EQUAL, nil)
+			s.addToken(tok.LESS_EQUAL, nil)
 		} else {
-			s.addToken(LESS, nil)
+			s.addToken(tok.LESS, nil)
 		}
 	case '>':
 		if s.match('=') {
-			s.addToken(GREATER_EQUAL, nil)
+			s.addToken(tok.GREATER_EQUAL, nil)
 		} else {
-			s.addToken(GREATER, nil)
+			s.addToken(tok.GREATER, nil)
 		}
 	case '/':
 		if s.match('/') {
@@ -184,7 +186,7 @@ func (s *Scanner) scanToken() {
 				s.advance()
 			}
 		} else {
-			s.addToken(SLASH, nil)
+			s.addToken(tok.SLASH, nil)
 		}
 	case ' ', '\r', '\t':
 		// Ignore whitespace.
@@ -206,9 +208,9 @@ func (s *Scanner) scanToken() {
 	}
 }
 
-func (s *Scanner) addToken(t TokenType, literal any) {
+func (s *Scanner) addToken(t tok.TokenType, literal any) {
 	text := s.source[s.start:s.current]
-	s.tokens = append(s.tokens, Token{
+	s.tokens = append(s.tokens, tok.Token{
 		Type:    t,
 		Lexeme:  text,
 		Literal: literal,

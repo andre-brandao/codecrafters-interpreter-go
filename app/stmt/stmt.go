@@ -1,4 +1,4 @@
-package main
+package stmt
 import (
 	expr "github.com/codecrafters-io/interpreter-starter-go/app/expr"
 	token "github.com/codecrafters-io/interpreter-starter-go/app/token"

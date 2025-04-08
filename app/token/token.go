@@ -56,7 +56,7 @@ const (
 	EOF
 )
 
-var keywords = map[string]TokenType{
+var Keywords = map[string]TokenType{
 	"and":    AND,
 	"class":  CLASS,
 	"else":   ELSE,

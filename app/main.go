@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
+
+	printer "github.com/codecrafters-io/interpreter-starter-go/app/printer"
+	tok "github.com/codecrafters-io/interpreter-starter-go/app/token"
 )
 
 var hadError = false
@@ -16,9 +19,9 @@ func report(line int, where string, message string) {
 	hadError = true
 }
 
-func Error(token Token, message string) {
+func Error(token tok.Token, message string) {
 	// report(line, "", message)
-	if token.Type == EOF {
+	if token.Type == tok.EOF {
 		report(token.Line, " at end", message)
 	} else {
 		report(token.Line, fmt.Sprintf(" at '%s'", string(token.Lexeme)), message)
@@ -127,7 +130,7 @@ func main() {
 				return
 			}
 
-			printer := NewAstPrinter()
+			printer := printer.NewAstPrinter()
 
 			fmt.Println(printer.Print(expr))
 
@@ -140,6 +143,14 @@ func main() {
 			tokens := s.ScanTokens()
 
 			p := NewParser(tokens)
+			defer func() {
+				if r := recover(); r != nil {
+					// fmt.Println("recovered")
+					// fmt.Fprint(os.Stderr, r)
+					hadError = true
+
+				}
+			}()
 			expr := p.ParseExpression()
 
 			if hadError {
