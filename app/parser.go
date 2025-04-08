@@ -41,7 +41,8 @@ func (p *Parser) isAtEnd() bool {
 }
 
 func (p *Parser) expression() exp.Expr {
-	return p.equality()
+	// return p.equality()
+	return p.assignment()
 }
 
 func (p *Parser) declaration() st.Stmt {
@@ -77,6 +78,12 @@ func (p *Parser) statement() st.Stmt {
 		return p.printStatement()
 	}
 
+	if p.match(tok.LEFT_BRACE) {
+		return &st.Block{
+			Statements: p.block(),
+		}
+	}
+
 	return p.expressionStatement()
 }
 
@@ -96,6 +103,35 @@ func (p *Parser) expressionStatement() st.Stmt {
 	}
 }
 
+func (p *Parser) block() []st.Stmt {
+	statements := make([]st.Stmt, 0)
+
+	for !p.check(tok.RIGHT_BRACE) && !p.isAtEnd() {
+		statements = append(statements, p.declaration())
+	}
+	p.consume(tok.RIGHT_BRACE, "Expect '}' after block.")
+	return statements
+}
+
+func (p *Parser) assignment() exp.Expr {
+	expr := p.equality()
+	if p.match(tok.EQUAL) {
+		equals := p.previous()
+		value := p.assignment()
+
+		if variable, ok := expr.(*exp.Variable); ok {
+			name := variable.Name
+			return &exp.Assign{
+				Name:  name,
+				Value: value,
+			}
+
+		}
+
+		p.Error(equals, "Invalid assignment target.")
+	}
+	return expr
+}
 func (p *Parser) equality() exp.Expr {
 	expr := p.comparison()
 

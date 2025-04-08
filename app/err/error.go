@@ -1,4 +1,4 @@
-package main
+package err
 
 import (
 	"fmt"
@@ -27,3 +27,5 @@ func (e *RuntimeError) Error() string {
 	}
 	return fmt.Sprintf("[line %d] Error: %s", e.token.Line, e.message)
 }
+
+var _ error = (*RuntimeError)(nil)

@@ -60,6 +60,10 @@ func (p *AstPrinter) VisitVariableExpr(expr *exp.Variable) interface{} {
 	return nil
 }
 
+func (p *AstPrinter) VisitAssignExpr(expr *exp.Assign) interface{} {
+	return nil
+}
+
 func (p *AstPrinter) parenthesize(name string, exprs ...exp.Expr) string {
 	var result string
 	result += "(" + name

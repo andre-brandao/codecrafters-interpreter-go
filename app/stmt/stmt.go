@@ -1,15 +1,17 @@
 package stmt
+
 import (
 	expr "github.com/codecrafters-io/interpreter-starter-go/app/expr"
 	token "github.com/codecrafters-io/interpreter-starter-go/app/token"
 )
+
 type StmtVisitor interface {
 	VisitPrintStmt(stmt *Print) interface{}
 	VisitExpressionStmt(stmt *Expression) interface{}
 	VisitVarStmt(stmt *Var) interface{}
 	VisitVariableStmt(stmt *Variable) interface{}
 	VisitUnaryStmt(stmt *UnaryStmt) interface{}
-	// VisitBlockStmt(stmt *Block) interface{}
+	VisitBlockStmt(stmt *Block) interface{}
 	// VisitClassStmt(stmt *Class) interface{}
 	// VisitFunctionStmt(stmt *Function) interface{}
 	// VisitIfStmt(stmt *If) interface{}
@@ -70,17 +72,18 @@ type Variable struct {
 func (v *Variable) Accept(visitor StmtVisitor) interface{} {
 	return visitor.VisitVariableStmt(v)
 }
+
 var _ Stmt = &Variable{}
 
-// type Block struct {
-// 	Statements []Stmt
-// }
+type Block struct {
+	Statements []Stmt
+}
 
-// func (b *Block) Accept(visitor StmtVisitor) interface{} {
-// 	return visitor.VisitBlockStmt(b)
-// }
+func (b *Block) Accept(visitor StmtVisitor) interface{} {
+	return visitor.VisitBlockStmt(b)
+}
 
-// var _ Stmt = &Block{}
+var _ Stmt = &Block{}
 
 // type Class struct {
 // 	Name       Token

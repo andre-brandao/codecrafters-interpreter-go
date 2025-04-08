@@ -4,16 +4,21 @@ import (
 	"fmt"
 	"os"
 
+	env "github.com/codecrafters-io/interpreter-starter-go/app/environment"
+	err "github.com/codecrafters-io/interpreter-starter-go/app/err"
 	exp "github.com/codecrafters-io/interpreter-starter-go/app/expr"
 	st "github.com/codecrafters-io/interpreter-starter-go/app/stmt"
 	tok "github.com/codecrafters-io/interpreter-starter-go/app/token"
 )
 
 type Interpreter struct {
+	enviroment *env.Environment
 }
 
 func NewInterpreter() *Interpreter {
-	return &Interpreter{}
+	return &Interpreter{
+		enviroment: env.NewEnvironment(nil),
+	}
 }
 
 func (i *Interpreter) InterpretExpression(expr exp.Expr) {
@@ -21,7 +26,7 @@ func (i *Interpreter) InterpretExpression(expr exp.Expr) {
 	defer func() {
 		if r := recover(); r != nil {
 			// fmt.Println("recovered")
-			runTimeError, ok := r.(*RuntimeError)
+			runTimeError, ok := r.(*err.RuntimeError)
 			if ok {
 				fmt.Fprint(os.Stderr, runTimeError.Error())
 			} else {
@@ -41,7 +46,7 @@ func (i *Interpreter) InterpretExpression(expr exp.Expr) {
 func (i *Interpreter) Interpret(statements []st.Stmt) {
 	defer func() {
 		if r := recover(); r != nil {
-			runTimeError, ok := r.(*RuntimeError)
+			runTimeError, ok := r.(*err.RuntimeError)
 			if ok {
 				fmt.Fprint(os.Stderr, runTimeError.Error())
 			} else {
@@ -109,7 +114,7 @@ func (i *Interpreter) VisitBinaryExpr(expr *exp.Binary) interface{} {
 			return append(left.([]rune), right.([]rune)...)
 		}
 
-		panic(NewRuntimeError(expr.Operator, "Operands must be two numbers or two strings."))
+		panic(err.NewRuntimeError(expr.Operator, "Operands must be two numbers or two strings."))
 	}
 
 	return nil
@@ -129,11 +134,12 @@ func (i *Interpreter) VisitUnaryExpr(expr *exp.Unary) interface{} {
 
 	return nil
 }
+
 func (i *Interpreter) VisitVarExpr(expr *exp.Var) interface{} {
-	return nil
+	return i.enviroment.Get(expr.Name)
 }
 func (i *Interpreter) VisitVariableExpr(expr *exp.Variable) interface{} {
-	return nil
+	return i.enviroment.Get(expr.Name)
 }
 
 func (i *Interpreter) evaluate(expr exp.Expr) interface{} {
@@ -143,16 +149,34 @@ func (i *Interpreter) evaluate(expr exp.Expr) interface{} {
 func (i *Interpreter) execute(stmt st.Stmt) interface{} {
 	return stmt.Accept(i)
 }
+func (i *Interpreter) executeBlock(statements []st.Stmt, environment *env.Environment) {
+	previous := i.enviroment
+	i.enviroment = environment
+	defer func() {
+		if r := recover(); r != nil {
+			// recover from panic
+		}
+		i.enviroment = previous
+	}()
+	for _, statement := range statements {
+		i.execute(statement)
+	}
+}
+
+func (i *Interpreter) VisitBlockStmt(stmt *st.Block) interface{} {
+	i.executeBlock(stmt.Statements, env.NewEnvironment(nil))
+	return nil
+}
 
 func checkNumberOperand(operator tok.Token, operand interface{}) {
 	if !isNumber(operand) {
-		panic(NewRuntimeError(operator, "Operand must be a number."))
+		panic(err.NewRuntimeError(operator, "Operand must be a number."))
 	}
 }
 
 func checkNumberOperands(operator tok.Token, left, right interface{}) {
 	if !isNumber(left) || !isNumber(right) {
-		panic(NewRuntimeError(operator, "Operands must be numbers."))
+		panic(err.NewRuntimeError(operator, "Operands must be numbers."))
 	}
 }
 
@@ -169,7 +193,19 @@ func (i *Interpreter) VisitPrintStmt(stmt *st.Print) interface{} {
 }
 
 func (i *Interpreter) VisitVarStmt(stmt *st.Var) interface{} {
+	var value any = nil
+
+	if stmt.Initializer != nil {
+		value = i.evaluate(stmt.Initializer)
+	}
+	i.enviroment.Define(string(stmt.Name.Lexeme), value)
 	return nil
+}
+func (i *Interpreter) VisitAssignExpr(expr *exp.Assign) interface{} {
+	value := i.evaluate(expr.Value)
+
+	i.enviroment.Assign(expr.Name, value)
+	return value
 }
 
 func (i *Interpreter) VisitUnaryStmt(stmt *st.UnaryStmt) interface{} {
