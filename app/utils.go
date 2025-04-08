@@ -78,11 +78,7 @@ func stringfy(obj any) string {
 	switch v := obj.(type) {
 	case float64:
 		s := fmt.Sprintf("%f", v)
-
-		// Trim trailing zeros
 		s = strings.TrimRight(s, "0")
-
-		// Trim the decimal point if it's the last character
 		s = strings.TrimRight(s, ".")
 		return s
 
@@ -95,4 +91,8 @@ func stringfy(obj any) string {
 	default:
 		return fmt.Sprintf("%v", obj)
 	}
+}
+
+type Return struct {
+	Value any
 }

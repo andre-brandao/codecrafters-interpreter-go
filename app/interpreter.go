@@ -197,9 +197,16 @@ func (i *Interpreter) executeBlock(statements []st.Stmt, environment *env.Enviro
 	previous := i.enviroment
 	i.enviroment = environment
 	defer func() {
-		if r := recover(); r != nil {
-			// recover from panic
-		}
+		// if r := recover(); r != nil {
+		// 	// recover from panic
+		// 	if value, ok := r.(*Return); ok {
+		// 		panic(value)
+		// 	} else {
+		// 		panic("Unknow error")
+		// 	}
+		// 	// fmt.Println("recover from panic executeBlock")
+		// 	// fmt.Println(r)
+		// }
 		i.enviroment = previous
 	}()
 	for _, statement := range statements {
@@ -249,6 +256,14 @@ func (i *Interpreter) VisitPrintStmt(stmt *st.Print) any {
 	value := i.evaluate(stmt.Expression)
 	fmt.Println(stringfy(value))
 	return nil
+}
+
+func (i *Interpreter) VisitReturnStmt(stmt *st.Return) any {
+	var value any = nil
+	if stmt.Value != nil {
+		value = i.evaluate(stmt.Value)
+	}
+	panic(&Return{Value: value})
 }
 
 func (i *Interpreter) VisitVarStmt(stmt *st.Var) any {

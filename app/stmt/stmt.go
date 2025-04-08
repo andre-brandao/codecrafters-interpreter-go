@@ -17,7 +17,7 @@ type StmtVisitor interface {
 	// VisitForStmt(stmt *For) any
 	// VisitClassStmt(stmt *Class) any
 	VisitFunctionStmt(stmt *Function) any
-	// VisitReturnStmt(stmt *Return) interface{}
+	VisitReturnStmt(stmt *Return) interface{}
 }
 
 type Stmt interface {
@@ -110,17 +110,6 @@ var _ Stmt = &If{}
 
 // var _ Stmt = &Class{}
 
-// type Return struct {
-// 	Keyword Token
-// 	Value   Expr
-// }
-
-// func (r *Return) Accept(visitor StmtVisitor) interface{} {
-// 	return visitor.VisitReturnStmt(r)
-// }
-
-// var _ Stmt = &Return{}
-
 type While struct {
 	Condition expr.Expr
 	Body      Stmt
@@ -143,3 +132,14 @@ func (f *Function) Accept(visitor StmtVisitor) any {
 }
 
 var _ Stmt = &Function{}
+
+type Return struct {
+	Keyword token.Token
+	Value   expr.Expr
+}
+
+func (r *Return) Accept(visitor StmtVisitor) interface{} {
+	return visitor.VisitReturnStmt(r)
+}
+
+var _ Stmt = &Return{}

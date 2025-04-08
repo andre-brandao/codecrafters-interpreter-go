@@ -29,3 +29,4 @@ func (e *RuntimeError) Error() string {
 }
 
 var _ error = (*RuntimeError)(nil)
+

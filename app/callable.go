@@ -30,9 +30,23 @@ func (lf *LoxFunction) call(interp *Interpreter, arguments []any) any {
 	for i := 0; i < len(lf.declaration.Params); i++ {
 		env.Define(string(lf.declaration.Params[i].Lexeme), arguments[i])
 	}
-	interp.executeBlock(lf.declaration.Body, env)
 
-	return nil
+	var returnValue any = nil
+
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				if value, ok := r.(*Return); ok {
+					returnValue = value.Value
+				} else {
+					panic("Unknow error")
+				}
+			}
+		}()
+		interp.executeBlock(lf.declaration.Body, env)
+	}()
+
+	return returnValue
 }
 
 func (lf *LoxFunction) arity() int {
