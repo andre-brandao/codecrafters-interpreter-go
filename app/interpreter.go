@@ -166,7 +166,7 @@ func (i *Interpreter) executeBlock(statements []st.Stmt, environment *env.Enviro
 }
 
 func (i *Interpreter) VisitBlockStmt(stmt *st.Block) interface{} {
-	i.executeBlock(stmt.Statements, env.NewEnvironment(nil))
+	i.executeBlock(stmt.Statements, env.NewEnvironment(i.enviroment))
 	return nil
 }
 
