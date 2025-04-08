@@ -51,10 +51,10 @@ func (p *AstPrinter) VisitUnaryExpr(expr *exp.Unary) interface{} {
 	return p.parenthesize(string(expr.Operator.Lexeme), expr.Right)
 }
 
-func (p *AstPrinter) VisitVarExpr(expr *exp.Var) interface{} {
-	// TODO: implement this
-	return nil
-}
+// func (p *AstPrinter) VisitVarExpr(expr *exp.Var) interface{} {
+// 	// TODO: implement this
+// 	return nil
+// }
 
 func (p *AstPrinter) VisitVariableExpr(expr *exp.Variable) interface{} {
 	return nil

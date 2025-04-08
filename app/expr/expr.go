@@ -9,7 +9,7 @@ type ExprVisitor interface {
 	VisitGroupingExpr(expr *Grouping) interface{}
 	VisitLiteralExpr(expr *Literal) interface{}
 	VisitUnaryExpr(expr *Unary) interface{}
-	VisitVarExpr(expr *Var) interface{}
+	// VisitVarExpr(expr *Var) interface{}
 	VisitVariableExpr(expr *Variable) interface{}
 	VisitAssignExpr(expr *Assign) interface{}
 	VisitLogicalExpr(expr *Logical) interface{}
@@ -67,16 +67,16 @@ func (g *Grouping) Accept(visitor ExprVisitor) interface{} {
 
 var _ Expr = (*Grouping)(nil)
 
-type Var struct {
-	Name        token.Token
-	Initializer Expr
-}
+// type Var struct {
+// 	Name        token.Token
+// 	Initializer Expr
+// }
 
-func (v *Var) Accept(visitor ExprVisitor) interface{} {
-	return visitor.VisitVarExpr(v)
-}
+// func (v *Var) Accept(visitor ExprVisitor) interface{} {
+// 	return visitor.VisitVarExpr(v)
+// }
 
-var _ Expr = (*Var)(nil)
+// var _ Expr = (*Var)(nil)
 
 type Variable struct {
 	Name token.Token

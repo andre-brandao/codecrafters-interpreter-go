@@ -152,9 +152,9 @@ func (i *Interpreter) VisitUnaryExpr(expr *exp.Unary) interface{} {
 	return nil
 }
 
-func (i *Interpreter) VisitVarExpr(expr *exp.Var) interface{} {
-	return i.enviroment.Get(expr.Name)
-}
+// func (i *Interpreter) VisitVarExpr(expr *exp.Var) interface{} {
+// 	return i.enviroment.Get(expr.Name)
+// }
 func (i *Interpreter) VisitVariableExpr(expr *exp.Variable) interface{} {
 	return i.enviroment.Get(expr.Name)
 }
