@@ -42,6 +42,10 @@ func isRune(v interface{}) bool {
 	_, ok := v.([]rune)
 	return ok
 }
+func isBool(v interface{}) bool {
+	_, ok := v.(bool)
+	return ok
+}
 
 func isEqual(left, right interface{}) bool {
 	if left == nil && right == nil {
@@ -58,6 +62,11 @@ func isEqual(left, right interface{}) bool {
 	}
 	if isRune(left) && isRune(right) {
 		return string(left.([]rune)) == string(right.([]rune))
+	}
+
+	// isBool
+	if isBool(left) && isBool(right) {
+		return left.(bool) == right.(bool)
 	}
 	return false
 }

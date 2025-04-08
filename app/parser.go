@@ -48,7 +48,6 @@ func (p *Parser) declaration() st.Stmt {
 	defer func() {
 		if r := recover(); r != nil {
 			p.synchronize()
-
 		}
 	}()
 
@@ -171,8 +170,8 @@ func (p *Parser) primary() exp.Expr {
 		return exp.NewLiteral(p.previous().Literal)
 	}
 
-	// if p.match(IDENTIFIER) {
-	// 	return NewVariable(p.previous())
+	// if p.match(tok.IDENTIFIER) {
+	// 	return exp.NewVariable(p.previous())
 	// }
 
 	if p.match(tok.LEFT_PAREN) {
