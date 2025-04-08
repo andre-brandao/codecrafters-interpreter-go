@@ -9,6 +9,8 @@ type ExprVisitor interface {
 	VisitGroupingExpr(expr *Grouping) interface{}
 	VisitLiteralExpr(expr *Literal) interface{}
 	VisitUnaryExpr(expr *Unary) interface{}
+	VisitVarExpr(expr *Var) interface{}
+	VisitVariableExpr(expr *Variable) interface{}
 }
 
 // EXPR
@@ -29,14 +31,6 @@ func (b *Binary) Accept(visitor ExprVisitor) interface{} {
 
 var _ Expr = (*Binary)(nil)
 
-func NewBinary(left Expr, operator token.Token, right Expr) *Binary {
-	return &Binary{
-		Left:     left,
-		Operator: operator,
-		Right:    right,
-	}
-}
-
 // LITERAL EXPR
 type Literal struct {
 	Value interface{}
@@ -47,10 +41,6 @@ func (l *Literal) Accept(visitor ExprVisitor) interface{} {
 }
 
 var _ Expr = (*Literal)(nil)
-
-func NewLiteral(value interface{}) *Literal {
-	return &Literal{Value: value}
-}
 
 // UNARY EXPR
 
@@ -65,13 +55,6 @@ func (u *Unary) Accept(visitor ExprVisitor) interface{} {
 
 var _ Expr = (*Unary)(nil)
 
-func NewUnary(operator token.Token, right Expr) *Unary {
-	return &Unary{
-		Operator: operator,
-		Right:    right,
-	}
-}
-
 type Grouping struct {
 	Expression Expr
 }
@@ -82,6 +65,21 @@ func (g *Grouping) Accept(visitor ExprVisitor) interface{} {
 
 var _ Expr = (*Grouping)(nil)
 
-func NewGrouping(expression Expr) *Grouping {
-	return &Grouping{Expression: expression}
+type Var struct {
+	Name        token.Token
+	Initializer Expr
+}
+
+func (v *Var) Accept(visitor ExprVisitor) interface{} {
+	return visitor.VisitVarExpr(v)
+}
+
+var _ Expr = (*Var)(nil)
+
+type Variable struct {
+	Name token.Token
+}
+
+func (v *Variable) Accept(visitor ExprVisitor) interface{} {
+	return visitor.VisitVariableExpr(v)
 }

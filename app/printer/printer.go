@@ -2,6 +2,7 @@ package printer
 
 import (
 	"fmt"
+
 	exp "github.com/codecrafters-io/interpreter-starter-go/app/expr"
 )
 
@@ -48,6 +49,15 @@ func (p *AstPrinter) VisitLiteralExpr(expr *exp.Literal) interface{} {
 
 func (p *AstPrinter) VisitUnaryExpr(expr *exp.Unary) interface{} {
 	return p.parenthesize(string(expr.Operator.Lexeme), expr.Right)
+}
+
+func (p *AstPrinter) VisitVarExpr(expr *exp.Var) interface{} {
+	// TODO: implement this
+	return nil
+}
+
+func (p *AstPrinter) VisitVariableExpr(expr *exp.Variable) interface{} {
+	return nil
 }
 
 func (p *AstPrinter) parenthesize(name string, exprs ...exp.Expr) string {

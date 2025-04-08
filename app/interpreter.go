@@ -129,6 +129,12 @@ func (i *Interpreter) VisitUnaryExpr(expr *exp.Unary) interface{} {
 
 	return nil
 }
+func (i *Interpreter) VisitVarExpr(expr *exp.Var) interface{} {
+	return nil
+}
+func (i *Interpreter) VisitVariableExpr(expr *exp.Variable) interface{} {
+	return nil
+}
 
 func (i *Interpreter) evaluate(expr exp.Expr) interface{} {
 	return expr.Accept(i)

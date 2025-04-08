@@ -103,7 +103,11 @@ func (p *Parser) equality() exp.Expr {
 		operator := p.previous()
 		right := p.comparison()
 
-		expr = exp.NewBinary(expr, operator, right)
+		expr = &exp.Binary{
+			Left:     expr,
+			Operator: operator,
+			Right:    right,
+		}
 	}
 
 	return expr
@@ -116,7 +120,12 @@ func (p *Parser) comparison() exp.Expr {
 		operator := p.previous()
 		right := p.term()
 
-		expr = exp.NewBinary(expr, operator, right)
+		// expr = exp.NewBinary(expr, operator, right)
+		expr = &exp.Binary{
+			Left:     expr,
+			Operator: operator,
+			Right:    right,
+		}
 	}
 	return expr
 }
@@ -128,7 +137,12 @@ func (p *Parser) term() exp.Expr {
 		operator := p.previous()
 		right := p.factor()
 
-		expr = exp.NewBinary(expr, operator, right)
+		// expr = exp.NewBinary(expr, operator, right)
+		expr = &exp.Binary{
+			Left:     expr,
+			Operator: operator,
+			Right:    right,
+		}
 	}
 	return expr
 }
@@ -140,7 +154,12 @@ func (p *Parser) factor() exp.Expr {
 		operator := p.previous()
 		right := p.unary()
 
-		expr = exp.NewBinary(expr, operator, right)
+		// expr = exp.NewBinary(expr, operator, right)
+		expr = &exp.Binary{
+			Left:     expr,
+			Operator: operator,
+			Right:    right,
+		}
 	}
 	return expr
 }
@@ -150,35 +169,55 @@ func (p *Parser) unary() exp.Expr {
 		operator := p.previous()
 		right := p.unary()
 
-		return exp.NewUnary(operator, right)
+		// return exp.NewUnary(operator, right)
+		return &exp.Unary{
+			Operator: operator,
+			Right:    right,
+		}
 	}
 	return p.primary()
 }
 
 func (p *Parser) primary() exp.Expr {
 	if p.match(tok.FALSE) {
-		return exp.NewLiteral(false)
+		// return exp.NewLiteral(false)
+		return &exp.Literal{
+			Value: false,
+		}
 	}
 	if p.match(tok.TRUE) {
-		return exp.NewLiteral(true)
+		// return exp.NewLiteral(true)
+		return &exp.Literal{
+			Value: true,
+		}
 	}
 	if p.match(tok.NIL) {
-		return exp.NewLiteral(nil)
+		// return exp.NewLiteral(nil)
+		return &exp.Literal{
+			Value: nil}
 	}
 
 	if p.match(tok.NUMBER, tok.STRING) {
-		return exp.NewLiteral(p.previous().Literal)
+		// return exp.NewLiteral(p.previous().Literal)
+		return &exp.Literal{
+			Value: p.previous().Literal,
+		}
 	}
 
-	// if p.match(tok.IDENTIFIER) {
-	// 	return exp.NewVariable(p.previous())
-	// }
+	if p.match(tok.IDENTIFIER) {
+		return &exp.Variable{
+			Name: p.previous(),
+		}
+	}
 
 	if p.match(tok.LEFT_PAREN) {
 		expr := p.expression()
 
 		p.consume(tok.RIGHT_PAREN, "Expect ')' after expression.")
-		return exp.NewGrouping(expr)
+		// return exp.NewGrouping(expr)
+		return &exp.Grouping{
+			Expression: expr,
+		}
 	}
 	// return nil, fmt.Errorf("Expect expression.", p.peek().Line)
 	// return nil, p.Error(p.peek(), "Expect expression.")
