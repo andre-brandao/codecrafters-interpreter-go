@@ -191,6 +191,9 @@ func (i *Interpreter) evaluate(expr exp.Expr) any {
 }
 
 func (i *Interpreter) execute(stmt st.Stmt) any {
+	// fmt.Println("execute stmt ----------- ", stmt)
+	// i.enviroment.Print()
+
 	return stmt.Accept(i)
 }
 func (i *Interpreter) executeBlock(statements []st.Stmt, environment *env.Environment) {
@@ -238,7 +241,7 @@ func (i *Interpreter) VisitExpressionStmt(stmt *st.Expression) any {
 }
 
 func (i *Interpreter) VisitFunctionStmt(stmt *st.Function) any {
-	function := NewLoxFunction(stmt)
+	function := NewLoxFunction(stmt, *i.enviroment)
 	i.enviroment.Define(string(stmt.Name.Lexeme), function)
 	return nil
 }

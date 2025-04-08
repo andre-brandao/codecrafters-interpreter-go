@@ -57,23 +57,40 @@ func (p *AstPrinter) VisitUnaryExpr(expr *exp.Unary) interface{} {
 // }
 
 func (p *AstPrinter) VisitVariableExpr(expr *exp.Variable) interface{} {
-	return nil
+	// return nil
+	return fmt.Sprintf("%s", string(expr.Name.Lexeme))
 }
 
 func (p *AstPrinter) VisitAssignExpr(expr *exp.Assign) interface{} {
-	return nil
+	// return nil
+	return fmt.Sprintf("%s", string(expr.Name.Lexeme))
 }
 
 func (p *AstPrinter) VisitLogicalExpr(expr *exp.Logical) interface{} {
 	// return p.parenthesize(string(expr.Operator.Lexeme), expr.Left, expr.Right)
-	return nil
+	// return nil
+	return p.parenthesize(string(expr.Operator.Lexeme), expr.Left, expr.Right)
 }
 
 func (p *AstPrinter) VisitCallExpr(expr *exp.Call) interface{} {
-	return nil
+	// return nil
+	// return p.parenthesizeSlice("call", expr.Callee, expr.Arguments)
+	return p.parenthesizeSlice("call", append(expr.Arguments, expr.Callee))
 }
 
 func (p *AstPrinter) parenthesize(name string, exprs ...exp.Expr) string {
+	var result string
+	result += "(" + name
+
+	for _, expr := range exprs {
+		result += " "
+		result += expr.Accept(p).(string)
+	}
+
+	result += ")"
+	return result
+}
+func (p *AstPrinter) parenthesizeSlice(name string, exprs []exp.Expr) string {
 	var result string
 	result += "(" + name
 

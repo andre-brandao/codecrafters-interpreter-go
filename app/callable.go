@@ -16,22 +16,31 @@ type LoxCallable interface {
 // implements LoxCallabel
 type LoxFunction struct {
 	declaration stmt.Function
+	closure     environment.Environment
 }
 
-func NewLoxFunction(declaration *stmt.Function) *LoxFunction {
+func NewLoxFunction(declaration *stmt.Function, closure environment.Environment) *LoxFunction {
 	return &LoxFunction{
 		declaration: *declaration,
+		closure:     closure,
 	}
 }
 
 func (lf *LoxFunction) call(interp *Interpreter, arguments []any) any {
-	env := environment.NewEnvironment(&interp.Globals)
+	env := environment.NewEnvironment(&lf.closure)
 
 	for i := 0; i < len(lf.declaration.Params); i++ {
 		env.Define(string(lf.declaration.Params[i].Lexeme), arguments[i])
 	}
 
 	var returnValue any = nil
+
+	// if string(lf.declaration.Name.Lexeme) == "filter" {
+
+	// fmt.Println("call function", string(lf.declaration.Name.Lexeme))
+	// env.Print()
+
+	// }
 
 	func() {
 		defer func() {

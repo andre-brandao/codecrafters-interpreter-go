@@ -46,3 +46,9 @@ func (e *Environment) Assign(name tok.Token, value any) {
 func (e *Environment) Define(name string, value any) {
 	e.values[name] = value
 }
+
+func (e *Environment) Print() {
+	for k, v := range e.values {
+		fmt.Println(k, v)
+	}
+}
