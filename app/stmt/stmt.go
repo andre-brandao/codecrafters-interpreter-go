@@ -13,10 +13,10 @@ type StmtVisitor interface {
 	VisitUnaryStmt(stmt *UnaryStmt) interface{}
 	VisitBlockStmt(stmt *Block) interface{}
 	VisitIfStmt(stmt *If) interface{}
+	VisitWhileStmt(stmt *While) interface{}
 	// VisitClassStmt(stmt *Class) interface{}
 	// VisitFunctionStmt(stmt *Function) interface{}
 	// VisitReturnStmt(stmt *Return) interface{}
-	// VisitWhileStmt(stmt *While) interface{}
 }
 
 type Stmt interface {
@@ -131,13 +131,13 @@ var _ Stmt = &If{}
 
 // var _ Stmt = &Return{}
 
-// type While struct {
-// 	Condition Expr
-// 	Body      Stmt
-// }
+type While struct {
+	Condition expr.Expr
+	Body      Stmt
+}
 
-// func (w *While) Accept(visitor StmtVisitor) interface{} {
-// 	return visitor.VisitWhileStmt(w)
-// }
+func (w *While) Accept(visitor StmtVisitor) interface{} {
+	return visitor.VisitWhileStmt(w)
+}
 
-// var _ Stmt = &While{}
+var _ Stmt = &While{}

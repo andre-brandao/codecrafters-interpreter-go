@@ -227,6 +227,14 @@ func (i *Interpreter) VisitVarStmt(stmt *st.Var) interface{} {
 	i.enviroment.Define(string(stmt.Name.Lexeme), value)
 	return nil
 }
+
+func (i *Interpreter) VisitWhileStmt(stmt *st.While) interface{} {
+	for isTruthy(i.evaluate(stmt.Condition)) {
+		i.execute(stmt.Body)
+	}
+
+	return nil
+}
 func (i *Interpreter) VisitAssignExpr(expr *exp.Assign) interface{} {
 	value := i.evaluate(expr.Value)
 

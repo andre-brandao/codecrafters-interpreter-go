@@ -17,3 +17,6 @@ var foo = "global foo";
 print world;
 print baz;
 print foo;
+
+print "hi" or 2; // "hi".
+print nil or "yes"; // "yes".

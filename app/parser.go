@@ -83,6 +83,10 @@ func (p *Parser) statement() st.Stmt {
 		return p.printStatement()
 	}
 
+	if p.match(tok.WHILE) {
+		return p.whileStatement()
+	}
+
 	if p.match(tok.LEFT_BRACE) {
 		return &st.Block{
 			Statements: p.block(),
@@ -115,6 +119,19 @@ func (p *Parser) printStatement() st.Stmt {
 	p.consume(tok.SEMICOLON, "Expect ';' after value.")
 	return &st.Print{
 		Expression: value,
+	}
+}
+
+func (p *Parser) whileStatement() st.Stmt {
+	p.consume(tok.LEFT_PAREN, "Expect '(' after 'while'.")
+	condition := p.expression()
+	p.consume(tok.RIGHT_PAREN, "Expect ')' after condition.")
+
+	body := p.statement()
+
+	return &st.While{
+		Condition: condition,
+		Body:      body,
 	}
 }
 
