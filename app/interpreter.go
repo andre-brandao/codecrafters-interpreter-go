@@ -29,10 +29,11 @@ func (i *Interpreter) InterpretExpression(expr exp.Expr) {
 			runTimeError, ok := r.(*err.RuntimeError)
 			if ok {
 				fmt.Fprint(os.Stderr, runTimeError.Error())
+				hadRuntimeError = true
 			} else {
+				fmt.Fprint(os.Stderr, r)
 				fmt.Fprint(os.Stderr, "Unknown error")
 			}
-			hadRuntimeError = true
 			// fmt.Print("interpret error")
 			// hadError = true
 		}
