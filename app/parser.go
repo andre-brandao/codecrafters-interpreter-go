@@ -107,6 +107,7 @@ func (p *Parser) block() []st.Stmt {
 	statements := make([]st.Stmt, 0)
 
 	for !p.check(tok.RIGHT_BRACE) && !p.isAtEnd() {
+		// fmt.Print(statements)
 		statements = append(statements, p.declaration())
 	}
 	p.consume(tok.RIGHT_BRACE, "Expect '}' after block.")
@@ -274,7 +275,9 @@ func (p *Parser) consume(t tok.TokenType, message string) tok.Token {
 	if p.check(t) {
 		return p.advance()
 	}
-	panic(message)
+	// panic(message)
+	// panic(err.NewRuntimeError(, message))
+	panic(p.Error(tok.NewToken(t, p.peek().Lexeme, nil, p.peek().Line), message))
 }
 
 func (p *Parser) check(t tok.TokenType) bool {

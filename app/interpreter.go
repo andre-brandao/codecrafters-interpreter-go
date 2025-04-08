@@ -51,7 +51,8 @@ func (i *Interpreter) Interpret(statements []st.Stmt) {
 			if ok {
 				fmt.Fprint(os.Stderr, runTimeError.Error())
 			} else {
-				fmt.Fprint(os.Stderr, "Unknown error")
+				fmt.Fprintln(os.Stderr, "Unknown error")
+				fmt.Fprintln(os.Stderr, r)
 			}
 			hadRuntimeError = true
 		}

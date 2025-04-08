@@ -179,12 +179,10 @@ func (s *Scanner) scanToken() {
 		}
 	case '/':
 		if s.match('/') {
-			// A comment goes until the end of the line.
-			// while (peek() != '\n' && !isAtEnd()) advance();
-			//
 			for s.peek() != '\n' && !s.isAtEnd() {
 				s.advance()
 			}
+
 		} else {
 			s.addToken(tok.SLASH, nil)
 		}
