@@ -15,7 +15,7 @@ func NewParser(tokens []Token) *Parser {
 		current: 0,
 	}
 }
-func (p *Parser) EvalExpression() Expr {
+func (p *Parser) ParseExpression() Expr {
 	return p.expression()
 }
 

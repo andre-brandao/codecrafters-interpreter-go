@@ -121,7 +121,7 @@ func main() {
 
 				}
 			}()
-			expr := p.EvalExpression()
+			expr := p.ParseExpression()
 
 			if hadError {
 				return
@@ -140,6 +140,26 @@ func main() {
 			tokens := s.ScanTokens()
 
 			p := NewParser(tokens)
+			expr := p.ParseExpression()
+
+			if hadError {
+				return
+			}
+			interpreter := NewInterpreter()
+			interpreter.InterpretExpression(expr)
+			if hadRuntimeError {
+				return
+			}
+		})
+		return
+
+	case "run":
+
+		runFile(filename, func(source []rune) {
+			s := NewScanner(source)
+			tokens := s.ScanTokens()
+
+			p := NewParser(tokens)
 			expr := p.Parse()
 
 			if hadError {
@@ -152,6 +172,7 @@ func main() {
 			}
 		})
 		return
+
 	default:
 		fmt.Fprintln(os.Stderr, "Unknown command:", command)
 
