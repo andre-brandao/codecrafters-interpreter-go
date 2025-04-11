@@ -171,13 +171,20 @@ func main() {
 			tokens := s.ScanTokens()
 
 			p := NewParser(tokens)
-			expr := p.Parse()
+			statements := p.Parse()
 
 			if hadError {
 				return
 			}
+
 			interpreter := NewInterpreter()
-			interpreter.Interpret(expr)
+			resolver := NewResolver(*interpreter)
+
+			if hadError {
+				return
+			}
+			resolver.resolveStmts(statements)
+			interpreter.Interpret(statements)
 			if hadRuntimeError {
 				return
 			}

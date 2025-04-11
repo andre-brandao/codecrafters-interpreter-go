@@ -87,6 +87,8 @@ func (v *Variable) Accept(visitor ExprVisitor) interface{} {
 	return visitor.VisitVariableExpr(v)
 }
 
+var _ Expr = (*Variable)(nil)
+
 type Assign struct {
 	Name  token.Token
 	Value Expr

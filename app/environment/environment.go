@@ -30,6 +30,18 @@ func (e *Environment) Get(name tok.Token) any {
 	panic(err.NewRuntimeError(name, fmt.Sprintf("Undefined variable '%s'.", string(name.Lexeme))))
 }
 
+func (e *Environment) GetAt(distance int, name tok.Token) any {
+	return e.ancestor(distance).Get(name)
+}
+
+func (e *Environment) ancestor(distance int) *Environment {
+	env := e
+	for i := 0; i < distance; i++ {
+		env = env.enclosing
+	}
+	return env
+}
+
 func (e *Environment) Assign(name tok.Token, value any) {
 	if _, ok := e.values[string(name.Lexeme)]; ok {
 		e.values[string(name.Lexeme)] = value
@@ -41,6 +53,10 @@ func (e *Environment) Assign(name tok.Token, value any) {
 		return
 	}
 	panic(err.NewRuntimeError(name, fmt.Sprintf("Undefined variable '%s'.", string(name.Lexeme))))
+}
+
+func (e *Environment) AssignAt(distance int, name tok.Token, value any) {
+	e.ancestor(distance).Assign(name, value)
 }
 
 func (e *Environment) Define(name string, value any) {

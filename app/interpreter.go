@@ -8,12 +8,14 @@ import (
 	err "github.com/codecrafters-io/interpreter-starter-go/app/err"
 	exp "github.com/codecrafters-io/interpreter-starter-go/app/expr"
 	st "github.com/codecrafters-io/interpreter-starter-go/app/stmt"
+	"github.com/codecrafters-io/interpreter-starter-go/app/token"
 	tok "github.com/codecrafters-io/interpreter-starter-go/app/token"
 )
 
 type Interpreter struct {
 	Globals    env.Environment
 	enviroment *env.Environment
+	locals     map[exp.Expr]int
 }
 
 func NewInterpreter() *Interpreter {
@@ -23,7 +25,12 @@ func NewInterpreter() *Interpreter {
 	return &Interpreter{
 		Globals:    globals,
 		enviroment: &globals,
+		locals:     make(map[exp.Expr]int),
 	}
+}
+
+func (i *Interpreter) Resolve(expr exp.Expr, depth int) {
+	i.locals[expr] = depth
 }
 
 func (i *Interpreter) InterpretExpression(expr exp.Expr) {
@@ -183,7 +190,16 @@ func (i *Interpreter) VisitUnaryExpr(expr *exp.Unary) any {
 //		return i.enviroment.Get(expr.Name)
 //	}
 func (i *Interpreter) VisitVariableExpr(expr *exp.Variable) any {
-	return i.enviroment.Get(expr.Name)
+	return i.lookUpVariable(expr.Name, expr)
+	// return i.enviroment.Get(expr.Name)
+}
+
+func (i *Interpreter) lookUpVariable(name token.Token, expr *exp.Variable) any {
+	distance := i.locals[expr]
+	if distance != -1 {
+		return i.enviroment.GetAt(distance, name)
+	}
+	return i.Globals.Get(name)
 }
 
 func (i *Interpreter) evaluate(expr exp.Expr) any {
@@ -289,7 +305,13 @@ func (i *Interpreter) VisitWhileStmt(stmt *st.While) any {
 func (i *Interpreter) VisitAssignExpr(expr *exp.Assign) any {
 	value := i.evaluate(expr.Value)
 
-	i.enviroment.Assign(expr.Name, value)
+	// i.enviroment.Assign(expr.Name, value)
+	distance, exists := i.locals[expr]
+	if exists {
+		i.enviroment.AssignAt(distance, expr.Name, value)
+	} else {
+		i.enviroment.Assign(expr.Name, value)
+	}
 	return value
 }
 
