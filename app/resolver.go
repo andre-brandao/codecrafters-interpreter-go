@@ -73,10 +73,10 @@ func (r *Resolver) VisitPrintStmt(stmt *st.Print) any {
 }
 
 func (r *Resolver) VisitReturnStmt(stmt *st.Return) any {
-    
-    if r.currentFunction == FunctionTypeNone {
-        Error(stmt.Keyword, "Can't return from top-level code.")
-    }
+
+	if r.currentFunction == FunctionTypeNone {
+		Error(stmt.Keyword, "Can't return from top-level code.")
+	}
 	if stmt.Value != nil {
 		r.resolveExpr(stmt.Value)
 	}
@@ -107,9 +107,9 @@ func (r *Resolver) VisitFunctionStmt(stmt *st.Function) any {
 }
 
 func (r *Resolver) VisitVariableExpr(expr *exp.Variable) any {
-	if !r.scopes.isEmpty() && r.scopes.Peek()[string(expr.Name.Lexeme)] == false {
-		Error(expr.Name, "Can't read local variable in its own initializer.")
-	}
+	// if !r.scopes.isEmpty() && (r.scopes.Peek()[string(expr.Name.Lexeme)] == false) {
+	// 	Error(expr.Name, "Can't read local variable in its own initializer.")
+	// }
 	r.resolveLocal(expr, expr.Name)
 	return nil
 }
